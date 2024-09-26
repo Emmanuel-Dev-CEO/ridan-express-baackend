@@ -29,8 +29,8 @@ const Index = () => {
     }
     return (
         <div>
-            <div className='grid grid-cols-3 md:grid-cols-1 gap-5'>
-                <div className='flex justify-center items-center p-5 bg-white rounded-md gap-5'>
+            <div className='grid grid-cols-3 gap-5 md:gap-1'>
+                <div className='flex justify-center items-center p-5 bg-white rounded-md gap-1 md:flex-wrap'>
                     <div className='bg-green-100 w-[47px] h-[47px] rounded-full flex justify-center items-center text-xl '>
                         <span className='text-xl text-green-800'>
                             <AiOutlineShoppingCart />
@@ -41,7 +41,7 @@ const Index = () => {
                         <span>Orders</span>
                     </div>
                 </div>
-                <div className='flex justify-center items-center p-5 bg-white rounded-md gap-5'>
+                <div className='flex justify-center items-center p-5 bg-white rounded-md gap-1 md:flex-wrap'>
                     <div className='bg-blue-100 w-[47px] h-[47px] rounded-full flex justify-center items-center text-xl '>
                         <span className='text-xl text-blue-800'>
                             <AiOutlineShoppingCart />
@@ -52,15 +52,15 @@ const Index = () => {
                         <span>Pending Orders</span>
                     </div>
                 </div>
-                <div className='flex justify-center items-center p-5 bg-white rounded-md gap-5'>
+                <div className='flex justify-center items-center p-5 bg-white rounded-md gap-1 md:flex-wrap'>
                     <div className='bg-red-100 w-[47px] h-[47px] rounded-full flex justify-center items-center text-xl '>
                         <span className='text-xl text-red-800'>
                             <AiOutlineShoppingCart />
                         </span>
                     </div>
-                    <div className='flex flex-col justify-start items-start text-slate-600'>
-                        <h2 className='text-3xl font-bold'>{cancelledOrder}</h2>
-                        <span>Cancelled Orders</span>
+                    <div className='flex flex-col justify-start md:justify-center items-start md:item-center text-center text-slate-600'>
+                        <h2 className='text-3xl font-bold md:text-[30px]'>{cancelledOrder}</h2>
+                        <span className='md:text-[15px]'>Cancelled Orders</span>
                     </div>
                 </div>
             </div>

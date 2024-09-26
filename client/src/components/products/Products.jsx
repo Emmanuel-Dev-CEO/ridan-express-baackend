@@ -31,7 +31,7 @@ const Products = ({ title,products }) => {
                         <span><FiChevronLeft/></span>
                     </button>
                     <button onClick={()=>next()} className='w-[30px] h-[30px] flex justify-center items-center bg-slate-300 border border-slate-200'>
-                        <span><FiChevronLeft/></span>
+                        <span><FiChevronRight/></span>
                     </button>
                 </div>
             </div>

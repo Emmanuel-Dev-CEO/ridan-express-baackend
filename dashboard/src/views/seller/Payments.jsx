@@ -15,7 +15,7 @@ const outerElementType = forwardRef((props, ref) => (
 
 const Payments = () => {
 
-    const [amount, setAmount] = useState(0)
+    const [amount, setAmount] = useState("")
     const dispatch = useDispatch()
     const { userInfo } = useSelector(state => state.auth)
     const { successMessage,

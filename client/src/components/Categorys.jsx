@@ -1,67 +1,75 @@
-import React from 'react'
-import Carousel from 'react-multi-carousel'
-import 'react-multi-carousel/lib/styles.css'
-import { Link } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+import React, { useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const Categorys = () => {
+  const { categorys = [] } = useSelector((state) => state.home);
+  const navigate = useNavigate();
+  const carouselRef = useRef(null); // Create a ref for the carousel container
 
-    const { categorys } = useSelector(state => state.home)
+  const handleSubmit = (category) => {
+    navigate(`/products?category=${category.name}`);
+  };
 
-    const responsive = {
-        superLargeDesktop: {
-            breakpoint: { max: 4000, min: 3000 },
-            items: 6
-        },
-        desktop: {
-            breakpoint: { max: 3000, min: 1024 },
-            items: 6
-        },
-        tablet: {
-            breakpoint: { max: 1024, min: 464 },
-            items: 4
-        },
-        mdtablet: {
-            breakpoint: { max: 991, min: 464 },
-            items: 4
-        },
-        mobile: {
-            breakpoint: { max: 768, min: 0 },
-            items: 3
-        },
-        smmobile: {
-            breakpoint: { max: 640, min: 0 },
-            items: 2
-        },
-        xsmobile: {
-            breakpoint: { max: 440, min: 0 },
-            items: 1
+  // Auto-scroll logic
+  useEffect(() => {
+    const carousel = carouselRef.current;
+
+    // Set auto-scroll interval
+    const autoScroll = setInterval(() => {
+      if (carousel) {
+        const maxScrollLeft = carousel.scrollWidth - carousel.clientWidth;
+        if (carousel.scrollLeft >= maxScrollLeft) {
+          carousel.scrollTo({ left: 0, behavior: "smooth" }); // Go back to the start when reaching the end
+        } else {
+          carousel.scrollBy({ left: 210, behavior: "smooth" }); // Scroll right by 150px
         }
-    }
-    return (
-        <div className='w-[87%] mx-auto relative'>
+      }
+    }, 3000); // Scroll every 3 seconds
 
-            <Carousel
-                autoPlay={true}
-                infinite={true}
-                arrows={true}
-                responsive={responsive}
-                transitionDuration={500}
+    // Cleanup interval on component unmount
+    return () => clearInterval(autoScroll);
+  }, []);
+
+  return (
+    <div className="w-13/14 mx-auto bg-[#FFFFFF] mx-8 md:p-6 rounded-lg shadow-sm">
+      {/* Heading Section */}
+      <div className="bg-[#191919] rounded-t-xl mb-8 p-2">
+        <h2 className="text-xl md:text-xl text-white font-semibold">
+          Shop by Category
+        </h2>
+      </div>
+
+      {/* Scrollable Carousel Section */}
+      <div
+        ref={carouselRef} // Attach ref to the scrollable container
+        className="flex overflow-x-scroll overflow-y-hidden m-4  no-scrollbar space-x-4"
+      >
+        {categorys.length > 0 ? (
+          categorys.map((category) => (
+            <div
+              key={category.id}
+              className="min-w-[160px] hover:bg-gray-200 mb-4 rounded-lg shadow-sm flex flex-col items-center justify-center cursor-pointer transition-transform transform hover:scale-105 hover:shadow-xl"
+              onClick={() => handleSubmit(category)}
             >
-                {
-                    categorys.map((c, i) => <Link className='h-[185px] border block' key={i} to='#'>
-                        <div className='w-full h-full relative p-3'>
-                            <img src={c.image} alt="image" />
-                            <div className='absolute bottom-6 w-full mx-auto font-bold left-0 flex justify-center items-center'>
-                                <span className='py-[2px] px-6 bg-[#3330305d] text-white'>{c.name}</span>
-                            </div>
-                        </div>
-                    </Link>)
-                }
-            </Carousel>
+              <img
+                src={category.image}
+                alt={category.name}
+                className="w-29 h-29 md:w-20 md:h-20 object-cover rounded-lg mb-4"
+              />
+              <h5 className="text-[15px] md:text-base font-semibold text-gray-800 text-center">
+                {category.name}
+              </h5>
+            </div>
+          ))
+        ) : (
+          <p className="text-gray-500 col-span-full text-center">
+            No categories available.
+          </p>
+        )}
+      </div>
+    </div>
+  );
+};
 
-        </div>
-    )
-}
-
-export default Categorys
+export default Categorys;

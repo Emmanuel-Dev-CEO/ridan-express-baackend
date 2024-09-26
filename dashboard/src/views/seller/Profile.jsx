@@ -14,7 +14,7 @@ const Profile = () => {
         district: '',
         shopName: '',
         sub_district: ''
-    })
+    }) 
     const dispatch = useDispatch()
     const { userInfo, loader, successMessage } = useSelector(state => state.auth)
 
