@@ -6,7 +6,8 @@ import api from '../../api/api'
 export const get_category = createAsyncThunk(
     'product/get_category',
     async (_, {
-        fulfillWithValue
+        fulfillWithValue,
+        rejectWithValue
     }) => {
         try {
             const {
@@ -14,7 +15,8 @@ export const get_category = createAsyncThunk(
             } = await api.get('/home/get-categorys')
             return fulfillWithValue(data)
         } catch (error) {
-            console.log(error.response)
+            console.log(error)
+            return rejectWithValue(error)
         }
     }
 )
@@ -22,7 +24,8 @@ export const get_category = createAsyncThunk(
 export const get_products = createAsyncThunk(
     'product/get_products',
     async (_, {
-        fulfillWithValue
+        fulfillWithValue,
+        rejectWithValue
     }) => {
         try {
             const {
@@ -31,6 +34,7 @@ export const get_products = createAsyncThunk(
             return fulfillWithValue(data)
         } catch (error) {
             console.log(error.response)
+            return rejectWithValue(error)
         }
     }
 )
@@ -38,7 +42,8 @@ export const get_products = createAsyncThunk(
 export const get_product = createAsyncThunk(
     'product/get_product',
     async (slug, {
-        fulfillWithValue
+        fulfillWithValue,
+        rejectWithValue
     }) => {
         try {
             const {
@@ -48,6 +53,7 @@ export const get_product = createAsyncThunk(
             return fulfillWithValue(data)
         } catch (error) {
             console.log(error.response)
+            return rejectWithValue(error)
         }
     }
 )
@@ -55,7 +61,8 @@ export const get_product = createAsyncThunk(
 export const price_range_product = createAsyncThunk(
     'product/price_range_product',
     async (_, {
-        fulfillWithValue
+        fulfillWithValue,
+        rejectWithValue
     }) => {
         try {
             const {
@@ -64,6 +71,7 @@ export const price_range_product = createAsyncThunk(
             return fulfillWithValue(data)
         } catch (error) {
             console.log(error.response)
+            return rejectWithValue(error)
         }
     }
 )
@@ -71,7 +79,8 @@ export const price_range_product = createAsyncThunk(
 export const get_banners = createAsyncThunk(
     'product/get_banners',
     async (_, {
-        fulfillWithValue
+        fulfillWithValue,
+        rejectWithValue
     }) => {
         try {
             const {
@@ -80,6 +89,7 @@ export const get_banners = createAsyncThunk(
             return fulfillWithValue(data)
         } catch (error) {
             console.log(error.response)
+            return rejectWithValue(error)
         }
     }
 )
@@ -87,7 +97,8 @@ export const get_banners = createAsyncThunk(
 export const query_products = createAsyncThunk(
     'product/query_products',
     async (query, {
-        fulfillWithValue
+        fulfillWithValue,
+        rejectWithValue
     }) => {
         try {
             const {
@@ -96,6 +107,7 @@ export const query_products = createAsyncThunk(
             return fulfillWithValue(data)
         } catch (error) {
             console.log(error.response)
+            return rejectWithValue(error)
         }
     }
 )
@@ -103,7 +115,8 @@ export const query_products = createAsyncThunk(
 export const customer_review = createAsyncThunk(
     'review/customer_review',
     async (info, {
-        fulfillWithValue
+        fulfillWithValue,
+        rejectWithValue
     }) => {
         try {
             const {
@@ -111,7 +124,8 @@ export const customer_review = createAsyncThunk(
             } = await api.post('/home/customer/submit-review', info)
             return fulfillWithValue(data)
         } catch (error) {
-
+            console.log(error.response)
+            return rejectWithValue(error)
         }
     }
 )
@@ -122,7 +136,7 @@ export const get_reviews = createAsyncThunk(
         productId,
         pageNumber
     }, {
-        fulfillWithValue
+        fulfillWithValue,rejectWithValue
     }) => {
         try {
             const {
@@ -131,7 +145,8 @@ export const get_reviews = createAsyncThunk(
             console.log(data)
             return fulfillWithValue(data)
         } catch (error) {
-
+            console.log(error.response)
+            return rejectWithValue(error)
         }
     }
 )
