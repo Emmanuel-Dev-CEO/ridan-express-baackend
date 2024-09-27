@@ -2,26 +2,19 @@ import {
     createSlice,
     createAsyncThunk
 } from '@reduxjs/toolkit'
-import axios from 'axios'
-import { base_url } from '../../utils/config'
-
-
+import api from '../../api/api'
 export const get_category = createAsyncThunk(
     'product/get_category',
     async (_, {
-        fulfillWithValue,
-        rejectWithValue
+        fulfillWithValue
     }) => {
-
-        
         try {
             const {
                 data
-            } = await axios.get(`${base_url}/api/home/get-categorys`)
+            } = await api.get('/home/get-categorys')
             return fulfillWithValue(data)
         } catch (error) {
-            console.log(error)
-            return rejectWithValue(error)
+            console.log(error.response)
         }
     }
 )
@@ -29,17 +22,15 @@ export const get_category = createAsyncThunk(
 export const get_products = createAsyncThunk(
     'product/get_products',
     async (_, {
-        fulfillWithValue,
-        rejectWithValue
+        fulfillWithValue
     }) => {
         try {
             const {
                 data
-            } = await axios.get(`${base_url}/api/home/get-products`)
+            } = await api.get('/home/get-products')
             return fulfillWithValue(data)
         } catch (error) {
             console.log(error.response)
-            return rejectWithValue(error)
         }
     }
 )
@@ -47,18 +38,16 @@ export const get_products = createAsyncThunk(
 export const get_product = createAsyncThunk(
     'product/get_product',
     async (slug, {
-        fulfillWithValue,
-        rejectWithValue
+        fulfillWithValue
     }) => {
         try {
             const {
                 data
-            } = await axios.get(`${base_url}/api/home/get-product/${slug}`)
+            } = await api.get(`/home/get-product/${slug}`)
             console.log(data)
             return fulfillWithValue(data)
         } catch (error) {
             console.log(error.response)
-            return rejectWithValue(error)
         }
     }
 )
@@ -66,17 +55,15 @@ export const get_product = createAsyncThunk(
 export const price_range_product = createAsyncThunk(
     'product/price_range_product',
     async (_, {
-        fulfillWithValue,
-        rejectWithValue
+        fulfillWithValue
     }) => {
         try {
             const {
                 data
-            } = await axios.get(`${base_url}/api/home/price-range-latest-product`)
+            } = await api.get('/home/price-range-latest-product')
             return fulfillWithValue(data)
         } catch (error) {
             console.log(error.response)
-            return rejectWithValue(error)
         }
     }
 )
@@ -84,17 +71,15 @@ export const price_range_product = createAsyncThunk(
 export const get_banners = createAsyncThunk(
     'product/get_banners',
     async (_, {
-        fulfillWithValue,
-        rejectWithValue
+        fulfillWithValue
     }) => {
         try {
             const {
                 data
-            } = await axios.get(`${base_url}/api/banners`)
+            } = await api.get('/banners')
             return fulfillWithValue(data)
         } catch (error) {
             console.log(error.response)
-            return rejectWithValue(error)
         }
     }
 )
@@ -102,17 +87,15 @@ export const get_banners = createAsyncThunk(
 export const query_products = createAsyncThunk(
     'product/query_products',
     async (query, {
-        fulfillWithValue,
-        rejectWithValue
+        fulfillWithValue
     }) => {
         try {
             const {
                 data
-            } = await axios.get(`${base_url}/api/home/query-products?category=${query.category}&&rating=${query.rating}&&lowPrice=${query.low}&&highPrice=${query.high}&&sortPrice=${query.sortPrice}&&pageNumber=${query.pageNumber}&&searchValue=${query.searchValue ? query.searchValue : ''}`)
+            } = await api.get(`/home/query-products?category=${query.category}&&rating=${query.rating}&&lowPrice=${query.low}&&highPrice=${query.high}&&sortPrice=${query.sortPrice}&&pageNumber=${query.pageNumber}&&searchValue=${query.searchValue ? query.searchValue : ''}`)
             return fulfillWithValue(data)
         } catch (error) {
             console.log(error.response)
-            return rejectWithValue(error)
         }
     }
 )
@@ -120,17 +103,15 @@ export const query_products = createAsyncThunk(
 export const customer_review = createAsyncThunk(
     'review/customer_review',
     async (info, {
-        fulfillWithValue,
-        rejectWithValue
+        fulfillWithValue
     }) => {
         try {
             const {
                 data
-            } = await axios.post(`${base_url}/api/home/customer/submit-review`, info)
+            } = await api.post('/home/customer/submit-review', info)
             return fulfillWithValue(data)
         } catch (error) {
-            console.log(error.response)
-            return rejectWithValue(error)
+
         }
     }
 )
@@ -141,17 +122,16 @@ export const get_reviews = createAsyncThunk(
         productId,
         pageNumber
     }, {
-        fulfillWithValue,rejectWithValue
+        fulfillWithValue
     }) => {
         try {
             const {
                 data
-            } = await axios.get(`${base_url}/api/home/customer/get-reviews/${productId}?pageNo=${pageNumber}`)
+            } = await api.get(`/home/customer/get-reviews/${productId}?pageNo=${pageNumber}`)
             console.log(data)
             return fulfillWithValue(data)
         } catch (error) {
-            console.log(error.response)
-            return rejectWithValue(error)
+
         }
     }
 )

@@ -2,27 +2,18 @@ import {
     createSlice,
     createAsyncThunk
 } from '@reduxjs/toolkit'
-import axios from 'axios'
-import { base_url } from '../../utils/config'
+import api from '../../api/api'
 
 export const get_dashboard_index_data = createAsyncThunk(
     'dashboard/get_dashboard_index_data',
     async (userId, {
         rejectWithValue,
-        fulfillWithValue,
-        getState
+        fulfillWithValue
     }) => {
-
-        const { token } = getState().auth
-        const config = {
-            header: {
-                Authorization: `Bearer ${token}`
-            }
-        }
         try {
             const {
                 data
-            } = await axios.get(`${base_url}/ap/home/customer/gat-dashboard-data/${userId}`, config)
+            } = await api.get(`/home/customer/gat-dashboard-data/${userId}`)
             return fulfillWithValue(data)
         } catch (error) {
             console.log(error.response.data)

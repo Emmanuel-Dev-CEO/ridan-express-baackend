@@ -2,23 +2,15 @@ import {
     createSlice,
     createAsyncThunk
 } from '@reduxjs/toolkit'
-import axios from 'axios'
-import { base_url } from '../../utils/config'
+import api from '../../api/api'
 
 export const add_friend = createAsyncThunk(
     'chat/add_friend',
-    async (info, { fulfillWithValue, rejectWithValue, getState }) => {
-        const { token } = getState().auth
-        const config = {
-            header: {
-                Authorization: `Bearer ${token}`
-            }
-        }
-
+    async (info, { fulfillWithValue, rejectWithValue }) => {
         try {
             const {
                 data
-            } = await axios.post(`${base_url}/api/chat/customer/add-customer-friend`, info, config)
+            } = await api.post('/chat/customer/add-customer-friend', info)
             console.log(data)
             return fulfillWithValue(data)
         } catch (error) {
@@ -29,18 +21,11 @@ export const add_friend = createAsyncThunk(
 
 export const send_message = createAsyncThunk(
     'chat/send_message',
-    async (info, { fulfillWithValue, rejectWithValue, getState }) => {
-
-        const { token } = getState().auth
-        const config = {
-            header: {
-                Authorization: `Bearer ${token}`
-            }
-        }
+    async (info, { fulfillWithValue, rejectWithValue }) => {
         try {
             const {
                 data
-            } = await axios.post(`${base_url}/api/chat/customer/send-message-to-seller`, info, config)
+            } = await api.post('/chat/customer/send-message-to-seller', info)
             console.log(data)
             return fulfillWithValue(data)
         } catch (error) {
@@ -56,7 +41,7 @@ export const chatReducer = createSlice({
         fd_messages: [],
         currentFd: "",
         successMessage: "",
-        errorMessage: ""
+        errorMessage : ""
     },
     reducers: {
         messageClear: (state, _) => {
