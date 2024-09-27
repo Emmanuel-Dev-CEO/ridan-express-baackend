@@ -3,7 +3,7 @@ const local = 'http://localhost:5000'
 const production = 'https://ridanexpress-api.onrender.com/'
 
 let api_url = ''
-let mode = 'pro'
+let mode = 'dev'
 
 if(mode === 'pro') {
   api_url = production

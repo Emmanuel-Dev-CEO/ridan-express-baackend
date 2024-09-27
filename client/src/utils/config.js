@@ -1,8 +1,8 @@
-const local = 'http://localhost:5000'
+const local = 'http://localhost:5000';
 const production = 'https://ridanexpress-api.onrender.com/'
 
 let base_url = ''
-let mode = 'dev'
+let mode = 'pro'
 
 if (mode === 'pro') {
     base_url = production
