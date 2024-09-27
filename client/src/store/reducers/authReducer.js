@@ -5,10 +5,12 @@ export const customer_register = createAsyncThunk(
     'auth/customer_register',
     async (info, { rejectWithValue, fulfillWithValue }) => {
         try {
+            console.log(info)
             const { data } = await api.post('/customer/customer-register', info)
             localStorage.setItem('customerToken', data.token)
             return fulfillWithValue(data)
         } catch (error) {
+            console.log(error)
             return rejectWithValue(error.response.data)
         }
     }
