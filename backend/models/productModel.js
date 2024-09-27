@@ -1,4 +1,4 @@
-const { Schema, model } = require('mongoose');
+const { Schema, model } = require('mongoose')
 
 const productSchema = new Schema({
     sellerId: {
@@ -33,15 +33,12 @@ const productSchema = new Schema({
         type: Number,
         required: true
     },
+
     description: {
         type: String,
         required: true
     },
     shopName: {
-        type: String,
-        required: true
-    },
-    location: {
         type: String,
         required: true
     },
@@ -52,12 +49,8 @@ const productSchema = new Schema({
     rating: {
         type: Number,
         default: 0
-    },
-    clarifaiTags: {
-        type: Array,
-        default: [] // Stores concepts or tags from Clarifai
     }
-}, { timestamps: true });
+}, { timestamps: true })
 
 productSchema.index({
     name: 'text',
@@ -71,6 +64,6 @@ productSchema.index({
         brand: 3,
         description: 2
     }
-});
+})
 
-module.exports = model('products', productSchema);
+module.exports = model('products', productSchema)
