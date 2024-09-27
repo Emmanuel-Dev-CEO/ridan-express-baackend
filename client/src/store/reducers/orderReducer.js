@@ -2,7 +2,8 @@ import {
     createSlice,
     createAsyncThunk
 } from '@reduxjs/toolkit'
-import api from '../../api/api'
+import axios from 'axios'
+import { base_url } from '../../utils/config'
 
 export const place_order = createAsyncThunk(
     'order/place_order',
@@ -18,7 +19,7 @@ export const place_order = createAsyncThunk(
         try {
             const {
                 data
-            } = await api.post('/home/order/palce-order', {
+            } = await axios.post('/home/order/palce-order', {
                 price,
                 products,
                 shipping_fee,
@@ -49,12 +50,20 @@ export const get_orders = createAsyncThunk(
         status
     }, {
         rejectWithValue,
-        fulfillWithValue
+        fulfillWithValue,
+        getState
     }) => {
+
+        const { token } = getState().auth
+        const config = {
+            header: {
+                Authorization: `Bearer ${token}`
+            }
+        }
         try {
             const {
                 data
-            } = await api.get(`/home/customer/gat-orders/${customerId}/${status}`)
+            } = await axios.get(`${base_url}/axios/customer/gat-orders/${customerId}/${status}`, config)
             return fulfillWithValue(data)
         } catch (error) {
             console.log(error.response)
@@ -66,12 +75,20 @@ export const get_order = createAsyncThunk(
     'order/get_order',
     async (orderId, {
         rejectWithValue,
-        fulfillWithValue
+        fulfillWithValue,
+        getState
     }) => {
+
+        const { token } = getState().auth
+        const config = {
+            header: {
+                Authorization: `Bearer ${token}`
+            }
+        }
         try {
             const {
                 data
-            } = await api.get(`/home/customer/gat-order/${orderId}`)
+            } = await axios.get(`${base_url}/api/home/customer/gat-order/${orderId}`, config)
             return fulfillWithValue(data)
         } catch (error) {
             console.log(error.response)

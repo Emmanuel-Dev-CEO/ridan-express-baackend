@@ -11,7 +11,7 @@ if(mode === 'pro') {
     api_url = local  
 }
 const api = axios.create({
-    baseURL: `${local}/api`,
+    baseURL: `${api_url}/api`,
     withCredentials : true
 })
 export default api
