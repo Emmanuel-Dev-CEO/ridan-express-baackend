@@ -160,7 +160,7 @@ const Headers = () => {
                   </div>
                   <Link to="/">
                     <img
-                      src="http://localhost:3001/images/logo.png"
+                      src="http://localhost:3000/images/logo.png"
                       className="h-[33px] md:h-[19px]"
                       alt="logo"
                     />

@@ -5,6 +5,7 @@ import Heders from '../components/Headers';
 import Banner from '../components/Banner';
 import Categorys from '../components/Categorys';
 import FeatureProducts from '../components/products/FeatureProducts';
+import LatestProduct from '../components/products/LatestProducts';
 import Products from '../components/products/Products';
 import Footer from '../components/Footer';
 import { get_category, get_products } from '../store/reducers/homeReducer';
@@ -19,6 +20,9 @@ const Home = () => {
     useEffect(() => {
         dispatch(get_products());
     }, [dispatch]);
+    useEffect(() => {
+        dispatch(get_category());
+    }, [dispatch]);
 
     return (
         <div className='w-full bg-[#F5F5F5]'>
@@ -27,8 +31,10 @@ const Home = () => {
             <div className='mx-12'>
                 <Categorys />
             </div>
+            <div className='py-[35px] mx-12'>
+                {products ? <LatestProduct products={products} /> : <p>Loading products...</p>}
+            </div>
 
-            {/* Ensure products are defined before rendering FeatureProducts */}
             <div className='py-[35px] mx-12'>
                 {products ? <FeatureProducts products={products} /> : <p>Loading products...</p>}
             </div>

@@ -36,18 +36,28 @@ const Banner = () => {
   return (
     <div className="flex md:flex-wrap md:mt-[100px] mx-auto max-w-screen-xl">
       {/* Carousel Section */}
-      <div className="h-[360px] w-[80%] md:h-[170px] my-4 ml-[15px] mx-4 rounded-xl bg-black overflow-hidden">
+      <div className="h-[360px] w-full md:h-[170px] my-4 ml-[15px] mx-4 rounded-xl bg-black overflow-hidden">
         <FlowbiteCarousel slideInterval={5000} indicators={true} arrows={true}>
           <img
             className="h-full"
-            src="https://www-konga-com-res.cloudinary.com/image/upload/w_1100,f_auto,fl_lossy,dpr_auto,q_auto/v1726645095/contentservice/back2school%20new%20banner.png_n-9hGKMCx.png"
+            src="../images/banner/BLACK (2).jpg"
             alt="..."
           />
           <img
             className="h-full"
-            src="https://www-konga-com-res.cloudinary.com/image/upload/w_1100,f_auto,fl_lossy,dpr_auto,q_auto/v1727029760/contentservice/REV_bigi_water_KONGA_ad.jpg_hUgO96RlF.jpg"
+            src="../images/banner/Fashion Sale (Banner (Landscape)) (1).jpg"
             alt="..."
           />
+          <img
+            className="h-full"
+            src="../images/banner/Shop on ridan.jpg"
+            alt="..."
+          />
+          {/* <img
+            className="h-full"
+            src="../images/banner/White and Green Simple Christmas Sale Outdoor Banner.jpg"
+            alt="..."
+          /> */}
           
         </FlowbiteCarousel>
       </div>

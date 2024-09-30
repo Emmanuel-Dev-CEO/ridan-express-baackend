@@ -28,7 +28,7 @@ const Categorys = () => {
     }, 3000); // Scroll every 3 seconds
 
     // Cleanup interval on component unmount
-    return () => clearInterval(autoScroll);
+    return () => clearInterval(autoScroll);  
   }, []);
 
   return (
@@ -49,13 +49,13 @@ const Categorys = () => {
           categorys.map((category) => (
             <div
               key={category.id}
-              className="min-w-[160px] hover:bg-gray-200 mb-4 rounded-lg shadow-sm flex flex-col items-center justify-center cursor-pointer transition-transform transform hover:scale-105 hover:shadow-xl"
+              className="w-[160px] hover:bg-gray-200 mb-4 rounded-lg shadow-sm flex flex-col items-center justify-center cursor-pointer transition-transform transform hover:scale-105 hover:shadow-xl"
               onClick={() => handleSubmit(category)}
             >
               <img
                 src={category.image}
                 alt={category.name}
-                className="w-29 h-29 md:w-20 md:h-20 object-cover rounded-lg mb-4"
+                className="w-19 h-19 md:w-20 md:h-20 object-cover rounded-lg mb-4"
               />
               <h5 className="text-[15px] md:text-base font-semibold text-gray-800 text-center">
                 {category.name}
