@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 import Ratings from "../Ratings";
 import { add_to_card, messageClear, add_to_wishlist } from "../../store/reducers/cardReducer";
 
-const LatestProduct = ({ products }) => {
+const TopRated_product = ({ topRated_product }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { userInfo } = useSelector((state) => state.auth);
@@ -45,12 +45,12 @@ const LatestProduct = ({ products }) => {
     <div className="mx-8 bg-[#FFFFFF] flex flex-wrap mx-auto">
       <div className="w-full">
         <div className="text-center flex justify-between rounded-t-xl items-start bg-[#191919] flex-row p-2 text-xl md:text-xl text-white font-semibold relative">
-          <h2>Latest Products</h2>
+          <h2></h2>
           <h2 className="text-[14px] md:text-[10px] px-3 font-light">SEE ALL</h2>
         </div>
       </div>
       <div className="w-100% grid grid-cols-5 sm:grid-cols-2 p-4 md:grid-cols-3 lg:grid-cols-4 gap-3">
-        {products.map((p, i) => (
+        {topRated_product.map((p, i) => (
           <div key={i} className="rounded-lg shadow-xl bg-white group transition-all duration-500 hover:shadow-xl hover:-mt-2">
             <div className="relative overflow-hidden">
               {p.discount && (
@@ -89,8 +89,8 @@ const LatestProduct = ({ products }) => {
 };
 
 // Define prop types
-LatestProduct.propTypes = {
-  products: PropTypes.arrayOf(
+TopRated_product.propTypes = {
+  topRated_product: PropTypes.arrayOf(
     PropTypes.shape({
       _id: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired,
@@ -104,4 +104,4 @@ LatestProduct.propTypes = {
   ).isRequired,
 };
 
-export default LatestProduct;
+export default TopRated_product;

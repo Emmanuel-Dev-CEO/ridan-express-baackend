@@ -5,10 +5,10 @@ import Heders from '../components/Headers';
 import Banner from '../components/Banner';
 import Categorys from '../components/Categorys';
 import FeatureProducts from '../components/products/FeatureProducts';
-import LatestProduct from '../components/products/LatestProducts';
 import Products from '../components/products/Products';
 import Footer from '../components/Footer';
 import { get_category, get_products } from '../store/reducers/homeReducer';
+import TopRated_product from '../components/products/TopRated_Products';
 
 const Home = () => {
     const dispatch = useDispatch();
@@ -32,7 +32,7 @@ const Home = () => {
                 <Categorys />
             </div>
             <div className='py-[35px] mx-12'>
-                {products ? <LatestProduct products={products} /> : <p>Loading products...</p>}
+                {products ? <TopRated_product products={topRated_product} /> : <p>Loading products...</p>}
             </div>
 
             <div className='py-[35px] mx-12'>
