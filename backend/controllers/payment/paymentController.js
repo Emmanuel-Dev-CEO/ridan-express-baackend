@@ -1,187 +1,260 @@
-const striptModel = require('../../models/stripeModel')
-const sellerModel = require('../../models/sellerModel')
-const sellerWallet = require('../../models/sellerWallet')
-const myShopWallet = require('../../models/myShopWallet')
-const withdrowRequest = require('../../models/withdrowRequest')
-const { responseReturn } = require('../../utiles/response')
-const { mongo: { ObjectId } } = require('mongoose')
-const { v4: uuidv4 } = require('uuid')
-const stripe = require('stripe')(process.env.stripe_key)
+const paystackModel = require('../../models/paystackModel');
+const sellerModel = require('../../models/sellerModel');
+const sellerWallet = require('../../models/sellerWallet');
+const myShopWallet = require('../../models/myShopWallet');
+const withdrawRequest = require('../../models/withdrawRequest');
+const { responseReturn } = require('../../utiles/response');
+const { mongo: { ObjectId } } = require('mongoose');
+const { v4: uuidv4 } = require('uuid');
+const paystack = require('paystack')(process.env.PAYSTACK_SECRET_KEY);
+const moment = require('moment');
+
+console.log('Paystack initialized:', paystack);
+
 class paymentController {
-    create_stripe_connect_account = async (req, res) => {
-        const { id } = req
-        const uid = uuidv4()
+    create_paystack_payment = async (req, res) => {
+        const { amount, sellerId } = req.body;
 
         try {
-            const stripInfo = await striptModel.findOne({ sellerId: id })
+            // Generate unique transaction ID
+            const transactionId = uuidv4();
 
-            if (stripInfo) {
-                await striptModel.deleteOne({ sellerId: id })
-                const account = await stripe.accounts.create({ type: 'express' })
+            // Create payment on Paystack
+            const payment = await paystack.transaction.initialize({
+                email: sellerEmail, 
+                amount: amount * 100,
+                callback_url: 'http://localhost:3001/payment/callback',
+                metadata: { sellerId, transactionId },
+            });
 
-                const accountLink = await stripe.accountLinks.create({
-                    account: account.id,
-                    refresh_url: 'http://localhost:3001/refresh',
-                    return_url: `http://localhost:3001/success?activeCode=${uid}`,
-                    type: 'account_onboarding'
-                })
-                await striptModel.create({
-                    sellerId: id,
-                    stripeId: account.id,
-                    code: uid
-                })
-                responseReturn(res, 201, { url: accountLink.url })
-            } else {
-                const account = await stripe.accounts.create({ type: 'express' })
+            const paymentReference = payment.data.reference;
+            const seller = await sellerModel.findById(sellerId);
+            const sellerEmail = seller.email;
+            const newPayment = new paystackModel({
+                sellerId,
+                transactionId,
+                reference: paymentReference,
+                amount, 
+                status: 'pending'
+            });
 
-                const accountLink = await stripe.accountLinks.create({
-                    account: account.id,
-                    refresh_url: 'http://localhost:3001/refresh',
-                    return_url: `http://localhost:3001/success?activeCode=${uid}`,
-                    type: 'account_onboarding'
-                })
-                await striptModel.create({
-                    sellerId: id,
-                    stripeId: account.id,
-                    code: uid
-                })
-                responseReturn(res, 201, { url: accountLink.url })
-            }
+            await newPayment.save();
+
+            return res.status(200).json({
+                authorization_url: payment.data.authorization_url,
+                reference: paymentReference
+            });
+
         } catch (error) {
-            console.log('stripe connect account create error ' + error.message)
+            console.error('Payment creation error:', error.message);
+            return res.status(500).json({ message: 'Internal server error' });
         }
     }
 
-    active_stripe_connect_account = async (req, res) => {
-        const { activeCode } = req.params
-        const { id } = req
+    payment_callback = async (req, res) => {
+        const { reference } = req.query;
+        console.log('Reference received for verification:', reference);
+
         try {
-            const userStripeInfo = await striptModel.findOne({ code: activeCode })
-            if (userStripeInfo) {
+            const verificationResponse = await paystack.transaction.verify(reference);
+
+            if (verificationResponse.data.status === 'success') {
+                const transactionDetails = verificationResponse.data;
+
+                const sellerId = transactionDetails.metadata.sellerId;
+                const amount = transactionDetails.amount / 100;
+
+                await this.creditSellerAndAdmin(sellerId, amount);
+
+                return res.status(200).json({ message: 'Payment verified and credited' });
+            } else {
+                return res.status(400).json({ message: 'Payment verification failed' });
+            }
+        } catch (error) {
+            console.error('Error verifying payment:', error.message);
+            return res.status(500).json({ message: 'Internal server error', error: error.message });
+        }
+    };
+
+    creditSellerAndAdmin = async (sellerId, amount) => {
+        const commissionRate = 0.02; 
+        const adminAmount = amount * commissionRate;
+        const sellerAmount = amount - adminAmount;
+
+        const time = moment().format('MM/DD/YYYY').split('/');
+
+        try {
+            // Credit seller's wallet
+            await sellerWallet.create({
+                sellerId,
+                amount: sellerAmount,
+                month: time[0],
+                year: time[2],
+            });
+
+            // Credit admin's wallet
+            await myShopWallet.create({
+                amount: adminAmount,
+                month: time[0],
+                year: time[2],
+            });
+        } catch (error) {
+            console.error('Error crediting wallets:', error.message);
+            throw new Error('Error crediting wallets');
+        }
+    };
+
+    create_paystack_account = async (req, res) => {
+        const { id } = req; 
+        const uid = uuidv4();
+
+        try {
+          
+            const existingAccount = await paystackModel.findOne({ sellerId: id });
+
+            if (existingAccount) {
+                await paystackModel.deleteOne({ sellerId: id });
+            }
+
+            // Create a new Paystack account
+            const account = await paystack.customer.create({
+                type: 'express',
+            });
+
+            // Ensure the account was created successfully
+            if (!account || !account.id) {
+                throw new Error('Failed to create Paystack account.');
+            }
+
+            // Create an account link
+            const accountLink = await paystack.account.link(account.id, {
+                refresh_url: 'http://localhost:3001/refresh',
+                return_url: `http://localhost:3001/success?activeCode=${uid}`,
+            });
+
+            // Save the Paystack account details in the database
+            await paystackModel.create({
+                sellerId: id,
+                paystackId: account.id,
+                code: uid,
+            });
+
+            return responseReturn(res, 201, { url: accountLink });
+        } catch (error) {
+            console.error('Paystack account creation error:', error.message);
+            return responseReturn(res, 500, { message: 'Internal server error', error: error.message });
+        }
+    };
+
+    active_paystack_account = async (req, res) => {
+        const { activeCode } = req.params;
+        const { id } = req; // Get seller ID from request object
+        try {
+            const userPaystackInfo = await paystackModel.findOne({ code: activeCode });
+            if (userPaystackInfo) {
                 await sellerModel.findByIdAndUpdate(id, {
                     payment: 'active'
-                })
-                responseReturn(res, 200, { message: 'payment active' })
+                });
+                return responseReturn(res, 200, { message: 'Payment active' });
             } else {
-                responseReturn(res, 404, { message: 'payment active failed' })
+                return responseReturn(res, 404, { message: 'Payment activation failed' });
             }
         } catch (error) {
-            responseReturn(res, 500, { message: 'Internal server error' })
+            console.error('Payment activation error:', error.message);
+            return responseReturn(res, 500, { message: 'Internal server error', error: error.message });
         }
-    }
+    };
 
-    sunAmount = (data) => {
-        let sum = 0;
+    sumAmount = (data) => {
+        return data.reduce((sum, item) => sum + item.amount, 0);
+    };
 
-        for (let i = 0; i < data.length; i++) {
-            sum = sum + data[i].amount
-        }
-        return sum
-    }
-
-    get_seller_payemt_details = async (req, res) => {
-        const { sellerId } = req.params
+    get_seller_payment_details = async (req, res) => {
+        const { sellerId } = req.params;
 
         try {
-            const payments = await sellerWallet.find({ sellerId })
+            const payments = await sellerWallet.find({ sellerId });
+            const pendingWithdrawals = await withdrawRequest.find({
+                sellerId,
+                status: 'pending'
+            });
+            const successfulWithdrawals = await withdrawRequest.find({
+                sellerId,
+                status: 'success'
+            });
 
-            const pendingWithdrows = await withdrowRequest.find({
-                $and: [
-                    {
-                        sellerId: {
-                            $eq: sellerId
-                        }
-                    }, {
-                        status: {
-                            $eq: 'pending'
-                        }
-                    }
-                ]
-            })
+            const pendingAmount = this.sumAmount(pendingWithdrawals);
+            const withdrawalAmount = this.sumAmount(successfulWithdrawals);
+            const totalAmount = this.sumAmount(payments);
 
-            const successWithdrows = await withdrowRequest.find({
-                $and: [
-                    {
-                        sellerId: {
-                            $eq: sellerId
-                        }
-                    }, {
-                        status: {
-                            $eq: 'success'
-                        }
-                    }
-                ]
-            })
+            const availableAmount = totalAmount > 0 ? totalAmount - (pendingAmount + withdrawalAmount) : 0;
 
-            const pendingAmount = this.sunAmount(pendingWithdrows)
-            const withdrowAmount = this.sunAmount(successWithdrows)
-            const totalAmount = this.sunAmount(payments)
+            // Get the admin balance from myShopWallet
+            const adminWallet = await myShopWallet.findOne(); // Assuming there's only one admin wallet
+            const adminBalance = adminWallet ? adminWallet.balance : 0; // Get the balance or set to 0 if not found
 
-            let availableAmount = 0;
-
-            if (totalAmount > 0) {
-                availableAmount = totalAmount - (pendingAmount + withdrowAmount)
-            }
-            responseReturn(res, 200, {
+            return responseReturn(res, 200, {
                 totalAmount,
                 pendingAmount,
-                withdrowAmount,
+                withdrawalAmount,
                 availableAmount,
-                successWithdrows,
-                pendingWithdrows
-            })
-
+                adminBalance, // Include admin balance in the response
+                successfulWithdrawals,
+                pendingWithdrawals
+            });
         } catch (error) {
-            console.log(error.message)
+            console.error('Error fetching seller payment details:', error.message);
+            return responseReturn(res, 500, { message: 'Internal server error', error: error.message });
         }
-    }
+    };
 
-    withdrowal_request = async (req, res) => {
-        const { amount, sellerId } = req.body
-        
+    withdrawal_request = async (req, res) => {
+        const { amount, sellerId } = req.body;
+
         try {
-            const withdrowal = await withdrowRequest.create({
+            const withdrawal = await withdrawRequest.create({
                 sellerId,
                 amount: parseInt(amount)
-            })
-            responseReturn(res, 200, { withdrowal, message: 'withdrowal request send' })
+            });
+            return responseReturn(res, 200, { withdrawal, message: 'Withdrawal request sent' });
         } catch (error) {
-            responseReturn(res, 500, { message: 'Internal server error' })
+            console.error('Withdrawal request error:', error.message);
+            return responseReturn(res, 500, { message: 'Internal server error', error: error.message });
         }
-    }
+    };
 
-    get_payment_request = async (req, res) => {
-
+    get_payment_requests = async (req, res) => {
         try {
-            const withdrowalRequest = await withdrowRequest.find({ status: 'pending' })
-            responseReturn(res, 200, { withdrowalRequest })
+            const withdrawalRequests = await withdrawRequest.find({ status: 'pending' });
+            return responseReturn(res, 200, { withdrawalRequests });
         } catch (error) {
-            responseReturn(res, 500, { message: 'Internal server error' })
+            console.error('Error fetching payment requests:', error.message);
+            return responseReturn(res, 500, { message: 'Internal server error', error: error.message });
         }
-    }
+    };
 
     payment_request_confirm = async (req, res) => {
-        const { paymentId } = req.body
+        const { paymentId } = req.body;
 
         try {
-            const payment = await withdrowRequest.findById(paymentId)
-            const { stripeId } = await striptModel.findOne({
+            const payment = await withdrawRequest.findById(paymentId);
+            const { paystackId } = await paystackModel.findOne({
                 sellerId: new ObjectId(payment.sellerId)
-            })
+            });
 
-            await stripe.transfers.create({
+            await paystack.transaction.charge({
                 amount: payment.amount * 100,
-                currency: 'usd',
-                destination: stripeId
-            })
-            await withdrowRequest.findByIdAndUpdate(paymentId, { status: 'success' })
-            responseReturn(res, 200, { payment, message: 'request confirm success' })
-        } catch (error) {
-            console.log(error)
-            responseReturn(res, 500, { message: 'Internal server error' })
-        }
+                currency: 'NGN',
+                destination: stripeId,
+            });
 
-    }
+            await withdrawRequest.findByIdAndUpdate(paymentId, { status: 'success' });
+            return responseReturn(res, 200, { payment, message: 'Request confirmed successfully' });
+        } catch (error) {
+            console.error('Error confirming payment request:', error.message);
+            return responseReturn(res, 500, { message: 'Internal server error', error: error.message });
+        }
+    };
 }
 
-module.exports = new paymentController()
+module.exports = new paymentController();

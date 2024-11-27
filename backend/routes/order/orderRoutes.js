@@ -1,13 +1,18 @@
 const router = require('express').Router()
 const orderController = require('../../controllers/order/orderController')
 
+
 // ---- customer
-router.post('/home/order/palce-order', orderController.place_order)
-router.get('/home/customer/gat-dashboard-data/:userId', orderController.get_customer_databorad_data)
-router.get('/home/customer/gat-orders/:customerId/:status', orderController.get_orders)
-router.get('/home/customer/gat-order/:orderId', orderController.get_order)
+router.post('/home/order/place-order', orderController.place_order)
+router.get('/home/customer/get-dashboard-data/:userId', orderController.get_customer_databorad_data)
+router.get('/home/customer/orders/:customerId/:status', orderController.get_orders)
+router.get('/home/customer/get-order/:orderId', orderController.get_order)
 router.post('/order/create-payment', orderController.create_payment)
 router.get('/order/confirm/:orderId', orderController.order_confirm)
+router.get('/verify-payment/:reference', orderController.verifyPaystackPayment);
+
+module.exports = router;
+
 
 // --- admin
 router.get('/admin/orders', orderController.get_admin_orders)

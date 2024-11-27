@@ -9,7 +9,7 @@ const sellerWalletSchema = new Schema({
         type: Number,
         required: true
     },
-    manth: {
+    month: {
         type: Number,
         required: true
     },

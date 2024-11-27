@@ -1,4 +1,4 @@
-const { Schema, model } = require('mongoose')
+const { Schema, model } = require('mongoose');
 
 const productSchema = new Schema({
     sellerId: {
@@ -29,11 +29,14 @@ const productSchema = new Schema({
         type: Number,
         required: true
     },
+    whatsapp: {
+        type: Number,
+        required: true
+    },
     discount: {
         type: Number,
         required: true
     },
-
     description: {
         type: String,
         required: true
@@ -49,8 +52,12 @@ const productSchema = new Schema({
     rating: {
         type: Number,
         default: 0
+    },
+    location: { // New field for product location
+        type: String,
+        required: true
     }
-}, { timestamps: true })
+}, { timestamps: true });
 
 productSchema.index({
     name: 'text',
@@ -64,6 +71,6 @@ productSchema.index({
         brand: 3,
         description: 2
     }
-})
+});
 
-module.exports = model('products', productSchema)
+module.exports = model('products', productSchema);

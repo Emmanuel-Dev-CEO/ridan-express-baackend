@@ -81,29 +81,29 @@ class homeControllers {
             })
             const relatedProducts = await productModel.find({
                 $and: [{
-                        _id: {
-                            $ne: product.id
-                        }
-                    },
-                    {
-                        category: {
-                            $eq: product.category
-                        }
+                    _id: {
+                        $ne: product.id
                     }
+                },
+                {
+                    category: {
+                        $eq: product.category
+                    }
+                }
                 ]
             }).limit(20)
             const moreProducts = await productModel.find({
 
                 $and: [{
-                        _id: {
-                            $ne: product.id
-                        }
-                    },
-                    {
-                        sellerId: {
-                            $eq: product.sellerId
-                        }
+                    _id: {
+                        $ne: product.id
                     }
+                },
+                {
+                    sellerId: {
+                        $eq: product.sellerId
+                    }
+                }
                 ]
             }).limit(3)
             responseReturn(res, 200, {
@@ -164,6 +164,34 @@ class homeControllers {
         }
     }
 
+    getProducts = async (req, res) => {
+        try {
+            const { category } = req.query; // Optional category filter
+            const query = category ? { category } : {};
+            const products = await Product.find(query);
+
+            res.status(200).json(products);
+        } catch (error) {
+            res.status(500).json({ message: "Error fetching products", error });
+        }
+    };
+
+    // Fetch a single product by ID
+    getProductById = async (req, res) => {
+        try {
+            const { id } = req.params;
+            const product = await Product.findById(id);
+
+            if (!product) {
+                return res.status(404).json({ message: "Product not found" });
+            }
+
+            res.status(200).json(product);
+        } catch (error) {
+            res.status(500).json({ message: "Error fetching product", error });
+        }
+    };
+
     submit_review = async (req, res) => {
         const {
             name,
@@ -218,49 +246,49 @@ class homeControllers {
         const skipPage = limit * (pageNo - 1)
         try {
             let getRating = await reviewModel.aggregate([{
-                    $match: {
-                        productId: {
-                            $eq: new ObjectId(productId)
-                        },
-                        rating: {
-                            $not: {
-                                $size: 0
-                            }
-                        }
-                    }
-                },
-                {
-                    $unwind: "$rating"
-                },
-                {
-                    $group: {
-                        _id: "$rating",
-                        count: {
-                            $sum: 1
+                $match: {
+                    productId: {
+                        $eq: new ObjectId(productId)
+                    },
+                    rating: {
+                        $not: {
+                            $size: 0
                         }
                     }
                 }
+            },
+            {
+                $unwind: "$rating"
+            },
+            {
+                $group: {
+                    _id: "$rating",
+                    count: {
+                        $sum: 1
+                    }
+                }
+            }
             ])
             let rating_review = [{
-                    rating: 5,
-                    sum: 0
-                },
-                {
-                    rating: 4,
-                    sum: 0
-                },
-                {
-                    rating: 3,
-                    sum: 0
-                },
-                {
-                    rating: 2,
-                    sum: 0
-                },
-                {
-                    rating: 1,
-                    sum: 0
-                }
+                rating: 5,
+                sum: 0
+            },
+            {
+                rating: 4,
+                sum: 0
+            },
+            {
+                rating: 3,
+                sum: 0
+            },
+            {
+                rating: 2,
+                sum: 0
+            },
+            {
+                rating: 1,
+                sum: 0
+            }
             ]
             for (let i = 0; i < rating_review.length; i++) {
                 for (let j = 0; j < getRating.length; j++) {

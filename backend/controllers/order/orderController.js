@@ -3,31 +3,64 @@ const customerOrder = require('../../models/customerOrder')
 const cardModel = require('../../models/cardModel')
 const myShopWallet = require('../../models/myShopWallet')
 const sellerWallet = require('../../models/sellerWallet')
-
 const { mongo: { ObjectId } } = require('mongoose')
 const { responseReturn } = require('../../utiles/response')
 
 const moment = require('moment')
-const stripe = require('stripe')(process.env.stripe_key)
+const paystack = require('paystack')(process.env.PAYSTACK_SECRET_KEY)
 
 class orderController {
-
-    paymentCheck = async (id) => {
+    verifyPaystackPayment = async (reference) => {
+        console.log('Reference passed to verify:', reference); // Log the reference here
         try {
-            const order = await customerOrder.findById(id)
-            if (order.payment_status === 'unpaid') {
-                await customerOrder.findByIdAndUpdate(id, {
-                    delivery_status: 'cancelled'
-                })
-                await authOrderModel.updateMany({
-                    orderId: id
-                }, {
-                    delivery_status: "cancelled"
-                })
+            const verificationResponse = await paystack.transaction.verify(reference);
+            console.log('Paystack Verification Response:', verificationResponse);
+            if (verificationResponse.status && verificationResponse.data.status === 'success') {
+                return verificationResponse.data;  // Payment is successful
             }
-            return true
+            return null;  
         } catch (error) {
-            console.log(error)
+            console.log('Error verifying payment: ', error);
+            return null;
+        }
+    }
+    
+
+    paymentCheck = async (orderId, reference) => {
+
+        try {
+            const order = await customerOrder.findById(orderId);
+
+            if (order.payment_status === 'unpaid') {
+                // Verify the payment status with Paystack
+                const verifiedPayment = await this.verifyPaystackPayment(reference);
+                console.log('Reference passed to verify:', reference);
+
+                if (verifiedPayment) {
+                    // Payment is verified
+                    await customerOrder.findByIdAndUpdate(orderId, {
+                        payment_status: 'paid',
+                        delivery_status: 'pending'
+                    });
+                    await authOrderModel.updateMany({ orderId: new ObjectId(orderId) }, {
+                        payment_status: 'paid',
+                        delivery_status: 'pending'
+                    });
+                } else {
+                    // If payment wasn't successful, mark the order as cancelled
+                    await customerOrder.findByIdAndUpdate(orderId, {
+                        delivery_status: 'cancelled'
+                    });
+                    await authOrderModel.updateMany({
+                        orderId: orderId
+                    }, {
+                        delivery_status: 'cancelled'
+                    });
+                }
+            }
+            return true;
+        } catch (error) {
+            console.log('Error in paymentCheck:', error.message);
         }
     }
 
@@ -37,22 +70,24 @@ class orderController {
             products,
             shipping_fee,
             shippingInfo,
-            userId
-        } = req.body
-        let authorOrderData = []
-        let cardId = []
-        const tempDate = moment(Date.now()).format('LLL')
+            userId,
+            reference  // Include payment reference
+        } = req.body;
 
-        let customerOrderProduct = []
+        let authorOrderData = [];
+        let cardId = [];
+        const tempDate = moment(Date.now()).format('LLL');
+
+        let customerOrderProduct = [];
 
         for (let i = 0; i < products.length; i++) {
-            const pro = products[i].products
+            const pro = products[i].products;
             for (let j = 0; j < pro.length; j++) {
-                let tempCusPro = pro[j].productInfo
-                tempCusPro.quantity = pro[j].quantity
-                customerOrderProduct.push(tempCusPro)
+                let tempCusPro = pro[j].productInfo;
+                tempCusPro.quantity = pro[j].quantity;
+                customerOrderProduct.push(tempCusPro);
                 if (pro[j]._id) {
-                    cardId.push(pro[j]._id)
+                    cardId.push(pro[j]._id);
                 }
             }
         }
@@ -66,16 +101,17 @@ class orderController {
                 delivery_status: 'pending',
                 payment_status: 'unpaid',
                 date: tempDate
-            })
+            });
+
             for (let i = 0; i < products.length; i++) {
-                const pro = products[i].products
-                const pri = products[i].price
-                const sellerId = products[i].sellerId
-                let storePro = []
+                const pro = products[i].products;
+                const pri = products[i].price;
+                const sellerId = products[i].sellerId;
+                let storePro = [];
                 for (let j = 0; j < pro.length; j++) {
-                    let tempPro = pro[j].productInfo
-                    tempPro.quantity = pro[j].quantity
-                    storePro.push(tempPro)
+                    let tempPro = pro[j].productInfo;
+                    tempPro.quantity = pro[j].quantity;
+                    storePro.push(tempPro);
                 }
 
                 authorOrderData.push({
@@ -87,21 +123,25 @@ class orderController {
                     shippingInfo: 'Dhaka myshop Warehouse',
                     delivery_status: 'pending',
                     date: tempDate
-                })
+                });
             }
-            await authOrderModel.insertMany(authorOrderData)
+
+            await authOrderModel.insertMany(authorOrderData);
             for (let k = 0; k < cardId.length; k++) {
-                await cardModel.findByIdAndDelete(cardId[k])
+                await cardModel.findByIdAndDelete(cardId[k]);
             }
+
+            // Check payment after some delay (adjust timeout if necessary)
             setTimeout(() => {
-                this.paymentCheck(order.id)
-            }, 15000)
+                this.paymentCheck(order.id, reference);
+            }, 15000);
+
             responseReturn(res, 201, {
-                message: "order placeed success",
+                message: "Order placed successfully",
                 orderId: order.id
-            })
+            });
         } catch (error) {
-            console.log(error.message)
+            console.log('Place order error: ', error.message);
         }
     }
 
@@ -163,7 +203,7 @@ class orderController {
     }
     get_order = async (req, res) => {
         const {
-            orderId
+            orderId,
         } = req.params
 
         try {
@@ -311,12 +351,16 @@ class orderController {
     }
 
     create_payment = async (req, res) => {
-        const { price } = req.body
+        const { price, email } = req.body
+        if (!email) {
+            return responseReturn(res, 400, { message: 'Email is required.' });
+        }
 
         try {
-            const payment = await stripe.paymentIntents.create({
+            const payment = await paystack.transaction.initialize({
                 amount: price * 100,
-                currency: 'usd',
+                email: email,
+                currency: 'NGN',
                 automatic_payment_methods: {
                     enabled: true
                 }
@@ -326,45 +370,54 @@ class orderController {
             console.log(error.message)
         }
     }
-
     order_confirm = async (req, res) => {
-        const { orderId } = req.params
+        const { orderId, reference } = req.params;
         try {
-            await customerOrder.findByIdAndUpdate(orderId, { payment_status: 'paid', delivery_status: 'pending' })
-            await authOrderModel.updateMany({ orderId: new ObjectId(orderId) }, {
-                payment_status: 'paid', delivery_status: 'pending'
-            })
-            const cuOrder = await customerOrder.findById(orderId)
+            console.log('Verifying payment with reference:', reference);
+            const verifiedPayment = await this.verifyPaystackPayment(reference);
 
-            const auOrder = await authOrderModel.find({
-                orderId: new ObjectId(orderId)
-            })
+            if (verifiedPayment) {
+                await customerOrder.findByIdAndUpdate(orderId, {
+                    payment_status: 'paid',
+                    delivery_status: 'pending'
+                });
+                await authOrderModel.updateMany({ orderId: new ObjectId(orderId) }, {
+                    payment_status: 'paid',
+                    delivery_status: 'pending'
+                });
 
-            const time = moment(Date.now()).format('l')
+                const cuOrder = await customerOrder.findById(orderId);
+                console.log('Updated Customer Order:', cuOrder);
+                const auOrder = await authOrderModel.find({ orderId: new ObjectId(orderId) });
 
-            const splitTime = time.split('/')
+                const time = moment(Date.now()).format('l');
+                const splitTime = time.split('/');
 
-            await myShopWallet.create({
-                amount: cuOrder.price,
-                manth: splitTime[0],
-                year: splitTime[2],
-            })
-
-            for (let i = 0; i < auOrder.length; i++) {
-                await sellerWallet.create({
-                    sellerId: auOrder[i].sellerId.toString(),
-                    amount: auOrder[i].price,
-                    manth: splitTime[0],
+                await myShopWallet.create({
+                    amount: cuOrder.price,
+                    month: splitTime[0],
                     year: splitTime[2],
-                })
+                });
+
+                for (let i = 0; i < auOrder.length; i++) {
+                    await sellerWallet.create({
+                        sellerId: auOrder[i].sellerId.toString(),
+                        amount: auOrder[i].price,
+                        month: splitTime[0],
+                        year: splitTime[2],
+                    });
+                }
+
+                responseReturn(res, 200, { message: 'Payment verified and order confirmed' });
+            } else {
+                responseReturn(res, 400, { message: 'Payment verification failed' });
             }
-
-            responseReturn(res, 200, { message: 'success' })
-
         } catch (error) {
-            console.log(error.message)
+            console.log('Order confirm error: ', error.message);
+            responseReturn(res, 500, { message: 'Internal server error' });
         }
     }
+
 }
 
 module.exports = new orderController()
