@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import axios from 'axios';
 import { GrMail } from "react-icons/gr";
-import { IoIosCall } from "react-icons/io";
+import { Dropdown, Button, HR } from "flowbite-react";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import {
   FaLinkedinIn,
@@ -29,7 +29,7 @@ const Headers = () => {
   const { card_product_count, wishlist_count } = useSelector(
     (state) => state.card
   );
- 
+
   const { pathname } = useLocation();
   const [showShidebar, setShowShidebar] = useState(true);
   const [categoryShow, setCategoryShow] = useState(true);
@@ -113,27 +113,6 @@ const Headers = () => {
                     <li>English</li>
                   </ul>
                 </div>
-                {userInfo ? (
-                  <Link
-                    className="flex cursor-pointer justify-center items-center gap-2 text-sm"
-                    to="/dashboard"
-                  >
-                    <span>
-                      <FaUser />
-                    </span>
-                    <span>{userInfo.name}</span>
-                  </Link>
-                ) : (
-                  <Link
-                    to="/login"
-                    className="flex cursor-pointer justify-center items-center gap-2 text-sm"
-                  >
-                    <span>
-                      <FaLock />
-                    </span>
-                    <span className="text-[12px]">Login</span>
-                  </Link>
-                )}
               </div>
             </div>
           </div>
@@ -147,21 +126,21 @@ const Headers = () => {
       >
         <div className="w-white">
           <div className="w-[85%] lg:w-[90%] mx-auto">
-            <div className="h-[40px] md:h-[17px] flex justify-between items-center flex-wrap">
-              <div className="md-lg:w-full flex justify-between w-3/12 md-lg:pt-2">
+            <div className="h-[40px] md:h-[1px] flex justify-between items-center flex-wrap">
+              <div className="md-lg:w-full flex justify-between w-3/12">
                 <div className="flex items-center">
                   <div
                     className="justify-center items-center w-[30px] h-[40px] text-white rounded-sm cursor-pointer lg:hidden md-lg:flex xl:hidden hidden"
                     onClick={() => setShowShidebar(false)}
                   >
-                    <span>
+                    <span className="text-black">
                       <FaBars />
                     </span>
                   </div>
                   <Link to="/">
                     <img
                       src="http://localhost:3000/images/logo.png"
-                      className="h-[33px] md:h-[19px]"
+                      className="h-[33px] md:h-[29px]"
                       alt="logo"
                     />
                   </Link>
@@ -173,7 +152,7 @@ const Headers = () => {
                         className="flex cursor-pointer justify-center items-center gap-2 text-sm"
                         to="/dashboard"
                       >
-                        <span className="text-xl text-orange-500">
+                        <span className="text-xl tex-black">
                           <FaUser />
                         </span>
                         <span className="md:hidden text-[12px]">{userInfo.name}</span>
@@ -181,7 +160,7 @@ const Headers = () => {
                     ) : (
                       <Link
                         to="/login"
-                        className="flex cursor-pointer justify-center items-center gap-2 text-sm"
+                        className="flex cursor-pointe justify-center items-center gap-2 text-sm"
                       >
                         <div className="flex cursor-pointer justify-center items-center gap-2 text-sm">
                           <span>
@@ -195,7 +174,7 @@ const Headers = () => {
                       onClick={redirect_card_page}
                       className="relative flex justify-center items-center cursor-pointer w-[35px] h-[35px] rounded-full"
                     >
-                      <span className="text-xl text-orange-500">
+                      <span className="text-xl text-black">
                         <FaShoppingCart />
                       </span>
                       {card_product_count !== 0 && (
@@ -315,11 +294,16 @@ const Headers = () => {
             className={`w-[300px] z-[9999] transition-all duration-200 fixed  ${showShidebar ? "-left-[300px]" : "left-0"
               } top-0 overflow-y-auto bg-white h-screen  px-2`}
           >
-            <div className="flex justify-start flex-col gap-6">
+            <div className="flex justify-start flex-col gap-1">
               <Link to="/">
-                <img src="http://localhost:3001/images/logo.png" alt="logo" />
+                <img
+                  src="http://localhost:3000/images/logo.png"
+                  className="h-[33px] mt-5"
+                  alt="logo"
+                />
               </Link>
-              <span className="font-bold mt-4">Popular Category</span>
+              <HR />
+              <span className="font-bold text-lg pb-4">Popular Category</span>
 
               <ul className=" text-slate-600 font-medium h-full overflow-auto">
                 {categorys.map((c, i) => {
@@ -344,7 +328,7 @@ const Headers = () => {
                 })}
               </ul>
 
-              <span className="font-bold mt-4">Profile</span>
+              <span className="font-bold pb-4">Profile</span>
 
               <div className="flex justify-star items-center gap-10">
                 <div className="flex group cursor-pointer text-slate-800 text-sm justify-center items-center gap-1 relative after:h-[18px] after:w-[1px] after:bg-[#afafaf] after:-right-[16px] after:absolute">
@@ -443,7 +427,7 @@ const Headers = () => {
                       placeholder="Trending Cloths"
                       value={searchValue}
                       onChange={(e) => setSearchValue(e.target.value)}
-                    />                    
+                    />
 
                     {/* Search button for text search */}
                     <button
@@ -455,22 +439,49 @@ const Headers = () => {
                   </div>
 
                 </div>
-                <div className="w-4/12 block md-lg:hidden pl-2 md-lg:w-full md-lg:pl-0">
-                  <div className="w-full flex justify-end md-lg:justify-start gap-3 items-center">
-                    <div className="w-[48px] h-[48px] rounded-full flex text-white bg-[#191919] justify-center items-center">
-                      <span>
-                        <IoIosCall />
-                      </span>
-                    </div>
-                    <div className="flex justify-end flex-col gap-1">
-                      <h2 className="text-[12px] font-medium text-black text-opacity-95">
-                        +234 803 378 4107
-                      </h2>
-                      <span className="text-[12px] text-black text-opacity-95">
-                        support 24/7 time
-                      </span>
-                    </div>
-                  </div>
+                <div className="w-4/12 flex gap-4 block md-lg:hidden pl-12 pt-4 md-lg:w-full md-lg:pl-0">
+                  <Dropdown label="Help">
+                    <Link to="/dashboard"><Dropdown.Item>Help center</Dropdown.Item></Link>
+                    <Dropdown.Item>Contact us</Dropdown.Item>
+                    <Dropdown.Item>Track my Orders</Dropdown.Item>
+                    <Dropdown.Item>Ridan return policy</Dropdown.Item>
+                    <Dropdown.Item>FAQs</Dropdown.Item>
+                  </Dropdown>
+
+
+                  {userInfo ? (
+                    <Dropdown label="Account">
+                      <Dropdown.Header>
+                        <span className="block text-sm">Hi,</span>
+                        <span className="block truncate text-sm font-medium">{userInfo.name}</span>
+                      </Dropdown.Header>
+                      <Link to="/dashboard"><Dropdown.Item>Dashboard</Dropdown.Item></Link>
+                      <Dropdown.Item>Settings</Dropdown.Item>
+                      <Dropdown.Item>Track Orders</Dropdown.Item>
+                      <Dropdown.Divider />
+                      <button className="bg-blue-500 text-bold w-[90%] m-2 rounded-sm"><Dropdown.Item className="text-white">Sign out</Dropdown.Item></button>
+                    </Dropdown>
+                    // <Link
+                    //   className="flex cursor-pointer justify-center items-center gap-2 text-sm"
+                    //   to="/dashboard"
+                    // >
+                    //   <span className="text-xl text-orange-500">
+                    //     <FaUser />
+                    //   </span>
+                    //   <span className="md:hidden text-[12px]">{userInfo.name}</span>
+                    // </Link>
+                  ) : (
+                    <Link
+                      to="/login"
+                      className="flex cursor-pointer justify-center items-center gap-2 text-sm"
+                    >
+                      <div className="flex cursor-pointer justify-center items-center gap-2 text-sm">
+                        <Button color="dark">Login</Button>
+                      </div>
+                    </Link>
+                  )}
+
+
                 </div>
               </div>
             </div>

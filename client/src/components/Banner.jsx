@@ -2,55 +2,55 @@ import React from "react";
 import { Carousel as FlowbiteCarousel } from "flowbite-react";
 // import Carousel from 'react-multi-carousel';
 // import 'react-multi-carousel/lib/styles.css';
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import { get_banners } from "../store/reducers/homeReducer";
 import { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { /* useSelector */ useDispatch } from "react-redux";
 
 const Banner = () => {
   const dispatch = useDispatch();
-  const { banners } = useSelector((state) => state.home);
-  const responsive = {
-    superLargeDesktop: {
-      breakpoint: { max: 4000, min: 3000 },
-      items: 1,
-    },
-    desktop: {
-      breakpoint: { max: 3000, min: 1024 },
-      items: 1,
-    },
-    tablet: {
-      breakpoint: { max: 1024, min: 464 },
-      items: 1,
-    },
-    mobile: {
-      breakpoint: { max: 464, min: 0 },
-      items: 1,
-    },
-  };
+  // const { banners } = useSelector((state) => state.home);
+  // const responsive = {
+  //   superLargeDesktop: {
+  //     breakpoint: { max: 4000, min: 3000 },
+  //     items: 1,
+  //   },
+  //   desktop: {
+  //     breakpoint: { max: 3000, min: 1024 },
+  //     items: 1,
+  //   },
+  //   tablet: {
+  //     breakpoint: { max: 1024, min: 464 },
+  //     items: 1,
+  //   },
+  //   mobile: {
+  //     breakpoint: { max: 464, min: 0 },
+  //     items: 1,
+  //   },
+  // };
 
   useEffect(() => {
     dispatch(get_banners());
-  }, []);
+  }, [dispatch]);
 
   return (
-    <div className="flex md:flex-wrap md:mt-[100px] mx-auto max-w-screen-xl">
+    <div className="flex item-center ml-[50px] md:ml-[5px] md:flex-wrap md:mt-[100px] mx-auto max-w-screen-xl">
       {/* Carousel Section */}
-      <div className="h-[360px] w-full md:h-[170px] my-4 ml-[15px] mx-4 rounded-xl bg-black overflow-hidden">
+      <div className="h-[365px] w-[900px] md:w-full md:h-[170px] md:mt-4 mt-3 ml-[45px] md:ml-[14px] mx-4 rounded-xl bg-black overflow-hidden">
         <FlowbiteCarousel slideInterval={5000} indicators={true} arrows={true}>
           <img
             className="h-full"
-            src="../images/banner/BLACK (2).jpg"
+            src="https://ng.jumia.is/cms/0-0-black-friday/2024/initiatives/Untitled-3.gif"
             alt="..."
           />
           <img
             className="h-full"
-            src="../images/banner/Fashion Sale (Banner (Landscape)) (1).jpg"
+            src="https://ng.jumia.is/cms/0-0-black-friday/2024/User_need/home-deals/home-DesktopHomepageSlider_712x384.png"
             alt="..."
           />
           <img
             className="h-full"
-            src="../images/banner/Shop on ridan.jpg"
+            src="https://ng.jumia.is/cms/0-0-black-friday/2024/Artboard-1.gif"
             alt="..."
           />
           {/* <img
@@ -58,29 +58,29 @@ const Banner = () => {
             src="../images/banner/White and Green Simple Christmas Sale Outdoor Banner.jpg"
             alt="..."
           /> */}
-          
+
         </FlowbiteCarousel>
       </div>
 
       {/* Grid Section */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 m-5">
+      <div className="grid  grid-cols-2 mr-[50px] md:mr-[15px] md:grid-cols-4 gap-2 md:gap-1 m-3">
         <img
-          className="object-cover rounded-lg w-[250px] h-[170px] md:h-[110px] md:w-full"
+          className="object-cover rounded-lg w-[200px] h-[180px] md:h-[110px] md:w-full"
           src="https://www-konga-com-res.cloudinary.com/image/upload/w_300,f_auto,fl_lossy,dpr_1.0,q_auto/v1721217481/contentservice/box%20banner.png_6YtnUQEK6.png"
           alt="Grid 1"
         />
         <img
-          className="object-cover rounded-lg w-[250px] h-[170px] md:h-[110px] md:w-full"
+          className="object-cover rounded-lg  w-[200px] h-[180px]  md:h-[110px] md:w-full"
           src="https://www-konga-com-res.cloudinary.com/image/upload/w_300,f_auto,fl_lossy,dpr_1.0,q_auto/v1714910034/contentservice/access%20new.png_r19IQgHfC.png"
           alt="Grid 2"
         />
         <img
-          className="object-cover rounded-lg w-[250px] h-[170px] md:h-[110px] md:w-full"
+          className="object-cover rounded-lg  w-[200px] h-[180px] md:h-[110px] md:w-full"
           src="https://www-konga-com-res.cloudinary.com/image/upload/w_300,f_auto,fl_lossy,dpr_1.0,q_auto/v1724314744/contentservice/image%20%281%29.png_UzlEcf8H0.png"
           alt="Grid 3"
         />
         <img
-          className="object-cover rounded-lg w-[250px] h-[170px] md:h-[110px] md:w-full"
+          className="object-cover rounded-lg  w-[200px] h-[180px] md:h-[110px] md:w-full"
           src="https://www-konga-com-res.cloudinary.com/image/upload/w_300,f_auto,fl_lossy,dpr_1.0,q_auto/v1693212058/contentservice/Bulky.jpg_ByGspCKTn.jpg"
           alt="Grid 4"
         />

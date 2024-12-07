@@ -5,6 +5,7 @@ import Pagination from '../Pagination'
 import { useSelector, useDispatch } from 'react-redux'
 import Search from '../components/Search'
 import { get_seller_request } from '../../store/Reducers/sellerReducer'
+
 const SellerRequest = () => {
     const dispatch = useDispatch()
     const { sellers, totalSeller } = useSelector(state => state.seller)

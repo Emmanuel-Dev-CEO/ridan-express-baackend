@@ -7,6 +7,7 @@ import OrderReducer from './Reducers/OrderReducer'
 import PaymentReducer from './Reducers/PaymentReducer'
 import dashboardIndexReducer from './Reducers/dashboardIndexReducer'
 import bannerReducer from './Reducers/bannerReducer'
+
 const rootReducer = {
     auth: authReducer,
     category: categoryReducer,

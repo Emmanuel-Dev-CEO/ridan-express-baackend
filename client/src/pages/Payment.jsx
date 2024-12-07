@@ -1,11 +1,13 @@
-import React, { useState } from 'react'
-import Headers from '../components/Headers'
-import Footer from '../components/Footer'
-import Stripe from '../components/Stripe'
-import { useLocation } from 'react-router-dom'
+import React, { useState } from 'react';
+import Headers from '../components/Headers';
+import Footer from '../components/Footer';
+import Paystack from '../components/Paystack'; // Import Paystack component
+import { useLocation } from 'react-router-dom';
+
 const Payment = () => {
-    const { state: { price, items, orderId } } = useLocation()
-    const [paymentMethod, setPaymentMethod] = useState('stripe')
+    const { state: { price, items, orderId } } = useLocation();
+    const [paymentMethod, setPaymentMethod] = useState('paystack'); // Default to Paystack
+
     return (
         <div>
             <Headers />
@@ -15,31 +17,27 @@ const Payment = () => {
                         <div className='w-7/12 md:w-full'>
                             <div className='pr-2 md:pr-0'>
                                 <div className='flex flex-wrap'>
-                                    <div onClick={() => setPaymentMethod('stripe')} className={`w-[20%] border-r cursor-pointer py-8 px-12 ${paymentMethod === 'stripe' ? 'bg-white' : 'bg-slate-100'}`}>
+                                    {/* Paystack Payment Method */}
+                                    <div 
+                                        onClick={() => setPaymentMethod('paystack')} 
+                                        className={`w-[20%] border-r cursor-pointer py-8 px-12 ${paymentMethod === 'paystack' ? 'bg-white' : 'bg-slate-100'}`}>
                                         <div className='flex flex-col gap-[3px] justify-center items-center'>
-                                            <img src="http://localhost:3000/images/payment/stripe.png" alt="stripe" />
-                                            <span className='text-slate-600'>Stripe</span>
+                                            <img src="http://localhost:3000/images/payment/paystack.png" alt="Paystack payment" />
+                                            <span className='text-slate-600'>Paystack</span>
                                         </div>
                                     </div>
-                                    <div onClick={() => setPaymentMethod('bkash')} className={`w-[20%] border-r cursor-pointer py-8 px-12 ${paymentMethod === 'bkash' ? 'bg-white' : 'bg-slate-100'}`}>
-                                        <div className='flex flex-col gap-[3px] justify-center items-center'>
-                                            <img src="http://localhost:3000/images/payment/bkash.png" alt="bkash" />
-                                            <span className='text-slate-600'>Chipper cash</span>
-                                        </div>
-                                    </div>
+
                                     
                                 </div>
-                                {
-                                    paymentMethod === 'stripe' && <div>
-                                        <Stripe orderId={orderId} price={price} />
+                                {/* Payment Method Components */}
+                                {paymentMethod === 'paystack' && (
+                                    <Paystack orderId={orderId} price={price} /> 
+                                )}
+                                {paymentMethod === 'bkash' && (
+                                    <div className='w-full px-4 py-8 bg-white shadow-sm'>
+                                        <button className='px-10 py-[6px] rounded-sm hover:shadow-orange-500/20 hover:shadow-lg bg-orange-500 text-white'>Pay Now</button>
                                     </div>
-                                }
-                                {
-                                    paymentMethod === 'chipper cash' && <div className='w-full px-4 py-8 bg-white shadow-sm'>
-                                        <button className='px-10 py-[6px] rounded-sm hover:shadow-wrange-500/20 hover:shadow-lg bg-orange-500 text-white'>Pay Now</button>
-                                    </div>
-                                }
-                               
+                                )}
                             </div>
                         </div>
                         <div className='w-5/12 md:w-full'>
@@ -62,7 +60,7 @@ const Payment = () => {
             </section>
             <Footer />
         </div>
-    )
+    );
 }
 
-export default Payment
+export default Payment;

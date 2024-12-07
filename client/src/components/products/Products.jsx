@@ -1,74 +1,65 @@
-import React from 'react'
-import Carousel from 'react-multi-carousel'
-import 'react-multi-carousel/lib/styles.css'
-import {FiChevronRight,FiChevronLeft} from 'react-icons/fi'
-import { Link } from 'react-router-dom'
-const Products = ({ title,products }) => {
-    const responsive = {
-        superLargeDesktop: {
-            breakpoint: { max: 4000, min: 3000 },
-            items: 1
-        },
-        desktop: {
-            breakpoint: { max: 3000, min: 1024 },
-            items: 1
-        },
-        tablet: {
-            breakpoint: { max: 1024, min: 464 },
-            items: 1
-        },
-        mobile: {
-            breakpoint: { max: 464, min: 0 },
-            items: 1
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import Skeleton from '@mui/material/Skeleton';
+import Ratings from "../Ratings";
+
+const Products = ({ title, products }) => {
+    const [isLoading, setIsLoading] = useState(true);
+
+    // Simulate loading completion when products are passed
+    useEffect(() => {
+        if (products && products.length > 0) {
+            setIsLoading(false); // Stop loading when products are available
         }
-    }
-    const ButtonGroup = ({ next, previous }) => {
-        return (
-            <div className='flex justify-between items-center'>
-                <div className='text-xl font-bold text-slate-600'>{title}</div>
-                <div className='flex justify-center items-center gap-3 text-slate-600'>
-                    <button onClick={()=>previous()} className='w-[30px] h-[30px] flex justify-center items-center bg-slate-300 border border-slate-200'>
-                        <span><FiChevronLeft/></span>
-                    </button>
-                    <button onClick={()=>next()} className='w-[30px] h-[30px] flex justify-center items-center bg-slate-300 border border-slate-200'>
-                        <span><FiChevronRight/></span>
-                    </button>
+    }, [products]);
+
+    return (
+        <div className="w-11/12 md:w-full mx-auto bg-[#FFFFFF]">
+            <div className="w-full">
+                <div className="text-center flex justify-center rounded-t-xl md:rounded-t-[5px] items-start bg-[#191919] md:bg-white flex-row p-2 text-xl md:text-lg text-white font-semibold relative">
+                    <h2 className="text-xl md:text-lg text-white md:text-[#191919] font-semibold">{title} <span className='text-orange-500'>On Ridan</span></h2>
                 </div>
             </div>
-        )
-    }
-    return (
-        <div className='flex gap-8 flex-col-reverse'>
-            <Carousel
-                autoPlay={false}
-                infinite={false}
-                arrows={false}
-                responsive={responsive}
-                transitionDuration={500}
-                renderButtonGroupOutside={true}
-                customButtonGroup={<ButtonGroup/>}
 
-            >
-                {
-                    products.map((p, i) => {
-                        return (
-                            <div key={i} className='flex flex-col justify-start gap-2'>
-                                {
-                                    p.map((pl,j) => <Link key={j} className='flex justify-start items-start' to='#'>
-                                        <img className='w-[110px] h-[110px]' src={pl.images[0]} alt="images" />
-                                        <div className='px-3 flex justify-start items-start gap-1 flex-col text-slate-600'>
-                                            <h2>{pl.name}</h2>
-                                            <span className='text-lg font-bold'>${pl.price}</span>
+            {/* Responsive grid layout for products */}
+            <div className="grid grid-cols-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 p-4">
+                {isLoading ? Array.from(new Array(5)).map((_, index) => (
+                    <div
+                        key={index}
+                        className="rounded-[15px] md:h-fit overflow-hidden shadow-lg bg-white group transition-all duration-500 hover:shadow-xl"
+                    >
+                        <Skeleton variant="rectangular" width={310} height={220} />
+                        <div className="py-3 px-2 text-gray-700">
+                            <Skeleton variant="text" width="80%" />
+                            <Skeleton variant="text" width="60%" />
+                            <Skeleton variant="text" width="50%" />
+                        </div>
+                    </div>
+                )) :
+                    products.map((p, i) => (
+                        p.map((pl, j) => (
+                            <Link key={j} className='flex justify-start items-start' to='#'>
+                                <div className="w-full h-[250px] md:h-fit flex flex-col rounded-[15px] overflow-hidden shadow-lg bg-white group transition-all duration-500 hover:shadow-xl">
+                                    <img className="w-full h-[70%] object-cover transition-transform duration-300 hover:scale-105"
+                                        src={pl.images[0]}
+                                        alt="product" />
+                                    <div className='px-3 py-2 flex flex-col justify-between text-slate-600'>
+                                        <h2 className="text-sm md:text-base font-semibold line-clamp-1">{pl.name}</h2>
+                                        <div className="flex">
+                                            <Ratings ratings={pl.rating} />
                                         </div>
-                                    </Link>)
-                                }
-                            </div>
-                        )
-                    })
+                                        <span className='text-[14px] py-2 font-bold text-black'>
+                                            NGN {pl.price.toLocaleString()}
+                                        </span>
+                                    </div>
+                                </div>
+                            </Link>
+                        ))
+                    ))
                 }
-            </Carousel>
+            </div>
         </div>
     )
 }
 
-export default Products
+export default Products;

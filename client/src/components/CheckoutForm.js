@@ -1,55 +1,55 @@
-import React from 'react'
-import { PaymentElement, LinkAuthenticationElement, useStripe, useElements } from '@stripe/react-stripe-js'
-import { useState } from 'react'
+import React, { useState } from 'react';
+
 const CheckoutForm = ({ orderId }) => {
+    localStorage.setItem('orderId', orderId);
+    const [message, setMessage] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
 
-    localStorage.setItem('orderId', orderId)
-    const stripe = useStripe()
-    const elements = useElements()
-    const [message, setMessage] = useState(null)
-    const [isLoading, setIsLoading] = useState(false)
+    const handlePayment = (event) => {
+        event.preventDefault();
+        setIsLoading(true);
 
-    const paymentElementOptions = {
-        loyout: 'tabs'
-    }
+        const handler = window.PaystackPop.setup({
+            key: process.env.REACT_APP_PAYSTACK_PUBLIC_KEY,
+            email: 'customer@example.com',
+            amount: 5000 * 100,
+            currency: 'NGN',
+            ref: orderId,
+            callback: async (response) => {
 
-    const submit = async (e) => {
-        e.preventDefault()
+                const reference = response.reference;
+                console.log('Payment successful. Reference:', reference);
 
-        if (!stripe || !elements) {
-            return
-        }
-        setIsLoading(true)
-        const { error } = await stripe.confirmPayment({
-            elements,
-            confirmParams: {
-                return_url: 'http://localhost:3000/order/confirm'
-            }
-        })
-        if (error.type === 'card_error' || error.type === 'validation_error') {
-            setMessage(error.message)
-        } else {
-            setMessage('An unexpected error occurred')
-        }
-        setIsLoading(false)
-    }
+                const verificationResult = await verifyPaystackPayment(reference);
+                if (verificationResult) {
+                    setMessage('Payment verified successfully. Thank you for your order!');
+                } else {
+                    setMessage('Payment verification failed. Please try again.');
+                }
+                setIsLoading(false);
+            },
+            onClose: () => {
+                // Handle when the user closes the payment modal
+                setMessage('Payment was closed. Please try again.');
+                setIsLoading(false);
+            },
+        });
+
+        handler.openIframe(); // Open the Paystack payment modal
+    };
 
     return (
-        <form onSubmit={submit} id='payment-form' >
-            <LinkAuthenticationElement
-                id='link-authentication-element'
-            />
-            <PaymentElement id='payment-element' options={paymentElementOptions} />
-            <button disabled={isLoading || !stripe || !elements} id='submit' className='px-10 py-[6px] rounded-sm hover:shadow-orange-500/20 hover:shadow-lg bg-orange-500 text-white'>
+        <form onSubmit={handlePayment} id='payment-form'>
+            <button disabled={isLoading} id='submit' className='px-10 py-[6px] rounded-sm hover:shadow-orange-500/20 hover:shadow-lg bg-orange-500 text-white'>
                 <span id='button-text'>
                     {
-                        isLoading ? <div>Loading.....</div> : "Pay now"
+                        isLoading ? <div>Loading...</div> : "Pay now"
                     }
                 </span>
             </button>
             {message && <div>{message}</div>}
         </form>
-    )
+    );
 }
 
-export default CheckoutForm
+export default CheckoutForm;

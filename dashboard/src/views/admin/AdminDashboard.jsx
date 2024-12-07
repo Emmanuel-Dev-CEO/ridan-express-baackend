@@ -74,7 +74,7 @@ const AdminDashboard = () => {
                 {
                     breakpoint: 565,
                     yaxis: {
-                        categories: ['Jan', 'Feb', 'Mar', 'Apl', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+                        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
                     },
                     options: {
                         plotOptions: {
@@ -92,7 +92,7 @@ const AdminDashboard = () => {
     }
     return (
         <div className='px-2 md:px-7 py-5'>
-            <div className='w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-7'>
+            <div className='w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-5 gap-7'>
                 <div className='flex justify-between items-center p-5 bg-[#283046] rounded-md gap-3'>
                     <div className='flex flex-col justify-start items-start text-[#d0d2d6]'>
                         <h2 className='text-3xl font-bold'>${totalSale}</h2>
@@ -106,6 +106,15 @@ const AdminDashboard = () => {
                     <div className='flex flex-col justify-start items-start text-[#d0d2d6]'>
                         <h2 className='text-3xl font-bold'>{totalProduct}</h2>
                         <span className='text-md font-medium'>Products</span>
+                    </div>
+                    <div className='w-[46px] h-[47px] rounded-full bg-[#e000e81f] flex justify-center items-center text-xl'>
+                        <RiProductHuntLine className='text-[#cd00e8] shadow-lg' />
+                    </div>
+                </div>
+                <div className='flex justify-between items-center p-5 bg-[#283046] rounded-md gap-3'>
+                    <div className='flex flex-col justify-start items-start text-[#d0d2d6]'>
+                        <h2 className='text-3xl font-bold'>{totalProduct}</h2>
+                        <span className='text-md font-medium'>Products in Draft</span>
                     </div>
                     <div className='w-[46px] h-[47px] rounded-full bg-[#e000e81f] flex justify-center items-center text-xl'>
                         <RiProductHuntLine className='text-[#cd00e8] shadow-lg' />

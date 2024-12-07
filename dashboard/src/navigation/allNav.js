@@ -2,6 +2,7 @@ import { AiFillDashboard, AiOutlineShoppingCart, AiOutlinePlus } from 'react-ico
 import { BiCategory, BiLoaderCircle } from 'react-icons/bi'
 import { FiUsers } from 'react-icons/fi'
 import { CiChat1 } from 'react-icons/ci'
+import DraftsIcon from '@mui/icons-material/Drafts';
 import { BsCurrencyDollar, BsChat } from 'react-icons/bs'
 import { RiProductHuntLine } from 'react-icons/ri'
 export const allNav = [
@@ -39,6 +40,13 @@ export const allNav = [
         icon: <BsCurrencyDollar />,
         role: 'admin',
         path: '/admin/dashboard/payment-request'
+    },
+    {
+        id: 6,
+        title: 'Supplier product',
+        icon: <DraftsIcon />,
+        role: 'admin',
+        path: '/admin/dashboard/supplier-product'
     },
     {
         id: 6,

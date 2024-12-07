@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import { Range } from 'react-range'
-import { MdOutlineKeyboardArrowRight } from 'react-icons/md'
 import Headers from '../components/Headers'
 import Footer from '../components/Footer'
 import Products from '../components/products/Products'
+import { HiHome } from "react-icons/hi";
+import { Breadcrumb } from "flowbite-react";
 import { AiFillStar } from 'react-icons/ai'
 import { CiStar } from 'react-icons/ci'
 import { BsFillGridFill } from 'react-icons/bs'
@@ -31,7 +32,7 @@ const SearchProducts = () => {
 
     useEffect(() => {
         dispatch(price_range_product())
-    }, [])
+    }, [dispatch])
     useEffect(() => {
         setState({
             values: [priceRange.low, priceRange.high]
@@ -50,7 +51,7 @@ const SearchProducts = () => {
                 searchValue
             })
         )
-    }, [state.values[0], state.values[1], category, rating, pageNumber, sortPrice, searchValue])
+    }, [state.values[0], state.values[1], category, rating, pageNumber, sortPrice, searchValue, dispatch])
 
     const resetRating = () => {
         setRatingQ('')
@@ -68,7 +69,7 @@ const SearchProducts = () => {
             <Headers />
             <section className='bg-[url("http://localhost:3000/images/banner/shop.gif")] h-[220px] mt-6 bg-cover bg-no-repeat relative bg-left'>
                 <div className='absolute left-0 top-0 w-full h-full bg-[#2422228a]'>
-                    <div className='w-[85%] md:w-[80%] sm:w-[90%] lg:w-[90%] h-full mx-auto'>
+                    {/* <div className='w-[85%] md:w-[80%] sm:w-[90%] lg:w-[90%] h-full mx-auto'>
                         <div className='flex flex-col justify-center gap-1 items-center h-full w-full text-white'>
                             <h2 className='text-3xl font-bold'>Shop.my</h2>
                             <div className='flex justify-center items-center gap-2 text-2xl w-full'>
@@ -77,7 +78,13 @@ const SearchProducts = () => {
                                 <span>Products</span>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
+                    <Breadcrumb aria-label="breadcrumb example" className="px-5 dark:bg-gray-800">
+                        <Breadcrumb.Item href="/" icon={HiHome}>
+                            Home
+                        </Breadcrumb.Item>
+                        <Breadcrumb.Item>Products</Breadcrumb.Item>
+                    </Breadcrumb>
                 </div>
             </section>
             <section className='py-16'>

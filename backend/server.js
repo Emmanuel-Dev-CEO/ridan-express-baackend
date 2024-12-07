@@ -77,7 +77,7 @@ io.on('connection', (soc) => {
         io.emit('activeSeller', allSeller);
         io.emit('activeCustomer', allCustomer);
     });
-    
+
     soc.on('add_seller', (sellerId, userInfo) => {
         addSeller(sellerId, soc.id, userInfo);
         io.emit('activeSeller', allSeller);
@@ -142,7 +142,7 @@ const verifyPaystackPayment = async (reference) => {
             return verificationResponse.data;  // Payment is successful
         }
         console.log('Paystack Verification Response:', verificationResponse);
-        return null;  
+        return null;
     } catch (error) {
         console.log('Error verifying payment: ', error);
         return null;
@@ -153,7 +153,7 @@ const verifyPaystackPayment = async (reference) => {
 app.post('/api/v2/order/verify-payment', async (req, res) => {
     const { reference } = req.body; // Get reference from the request body
     console.log('Reference passed to verify:', reference); // Log the reference
-    
+
     if (!reference) {
         return res.status(400).json({ message: 'No reference provided for payment verification' });
     }
@@ -173,7 +173,7 @@ app.post('/api/v2/order/verify-payment', async (req, res) => {
 
 // Other routes
 app.use('/api', require('./routes/chatRoutes'));
-app.use('/api', require('./routes/draftRoutes')); 
+app.use('/api', require('./routes/supplierRoutes'));
 app.use('/api', require('./routes/paymentRoutes'));
 app.use('/api', require('./routes/bannerRoutes'));
 app.use('/api', require('./routes/dashboard/dashboardIndexRoutes'));

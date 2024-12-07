@@ -27,8 +27,10 @@ const AddProduct = () => {
         discount: '',
         price: "",
         brand: "",
-        stock: ""
-    })
+        stock: "",
+        location: "",
+        whatsapp: ""
+    });
     const inputHandle = (e) => {
         setState({
             ...state,
@@ -90,22 +92,24 @@ const AddProduct = () => {
         setAllCategory(categorys)
     }, [categorys])
 
-    const add = (e) => {
-        e.preventDefault()
-        const formData = new FormData()
-        formData.append('name', state.name)
-        formData.append('description', state.description)
-        formData.append('price', state.price)
-        formData.append('stock', state.stock)
-        formData.append('category', category)
-        formData.append('discount', state.discount)
-        formData.append('shopName', userInfo?.shopInfo?.shopName)
-        formData.append('brand', state.brand)
-        for (let i = 0; i < images.length; i++) {
-            formData.append('images', images[i])
-        }
-        dispatch(add_product(formData))
+   const add = (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append('name', state.name);
+    formData.append('description', state.description);
+    formData.append('price', state.price);
+    formData.append('stock', state.stock);
+    formData.append('category', category);
+    formData.append('discount', state.discount);
+    formData.append('shopName', userInfo?.shopInfo?.shopName);
+    formData.append('brand', state.brand);
+    formData.append('location', state.location);
+    formData.append('whatsapp', state.whatsapp);
+    for (let i = 0; i < images.length; i++) {
+        formData.append('images', images[i]);
     }
+    dispatch(add_product(formData));
+}
     useEffect(() => {
         if (errorMessage) {
             toast.error(errorMessage)
@@ -120,7 +124,8 @@ const AddProduct = () => {
                 discount: '',
                 price: "",
                 brand: "",
-                stock: ""
+                stock: "",
+                whatsapp: ""
             })
             setImageShow([])
             setImages([])
@@ -128,7 +133,7 @@ const AddProduct = () => {
 
         }
     }, [successMessage, errorMessage])
-    
+
     return (
         <div className='px-2 lg:px-7 pt-5 '>
             <div className='w-full p-4  bg-[#283046] rounded-md'>
@@ -142,6 +147,10 @@ const AddProduct = () => {
                             <div className='flex flex-col w-full gap-1'>
                                 <label htmlFor="name">Product name</label>
                                 <input className='px-4 py-2 focus:border-indigo-500 outline-none bg-[#283046] border border-slate-700 rounded-md text-[#d0d2d6]' onChange={inputHandle} value={state.name} type="text" placeholder='product name' name='name' id='name' />
+                            </div>
+                            <div className='flex flex-col w-full gap-1'> {/* New location input */}
+                                <label htmlFor="location">Product location</label>
+                                <input className='px-4 py-2 focus:border-indigo-500 outline-none bg-[#283046] border border-slate-700 rounded-md text-[#d0d2d6]' onChange={inputHandle} value={state.location} type="text" placeholder='product location' name='location' id='location' />
                             </div>
                             <div className='flex flex-col w-full gap-1'>
                                 <label htmlFor="brand">Product brand</label>
@@ -168,6 +177,10 @@ const AddProduct = () => {
                                         }
                                     </div>
                                 </div>
+                            </div>
+                            <div className='flex flex-col w-full gap-1'>
+                                <label htmlFor="whatsapp">Whatsapp Number</label>
+                                <input className='px-4 py-2 focus:border-indigo-500 outline-none bg-[#283046] border border-slate-700 rounded-md text-[#d0d2d6]' onChange={inputHandle} value={state.whatsapp} type="number" min='0' placeholder='product whatsapp' name='whatsapp' id='stock' />
                             </div>
                             <div className='flex flex-col w-full gap-1'>
                                 <label htmlFor="stock">Stock</label>

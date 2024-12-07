@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 const Categorys = () => {
   const { categorys = [] } = useSelector((state) => state.home);
   const navigate = useNavigate();
-  const carouselRef = useRef(null); // Create a ref for the carousel container
+  const carouselRef = useRef(null);
 
   const handleSubmit = (category) => {
     navigate(`/products?category=${category.name}`);
@@ -20,54 +20,50 @@ const Categorys = () => {
       if (carousel) {
         const maxScrollLeft = carousel.scrollWidth - carousel.clientWidth;
         if (carousel.scrollLeft >= maxScrollLeft) {
-          carousel.scrollTo({ left: 0, behavior: "smooth" }); // Go back to the start when reaching the end
+          carousel.scrollTo({ left: 0, behavior: "smooth" });
         } else {
-          carousel.scrollBy({ left: 210, behavior: "smooth" }); // Scroll right by 150px
+          carousel.scrollBy({ left: 210, behavior: "smooth" });
         }
       }
-    }, 3000); // Scroll every 3 seconds
+    }, 3000);
 
-    // Cleanup interval on component unmount
-    return () => clearInterval(autoScroll);  
+    return () => clearInterval(autoScroll);
   }, []);
 
   return (
-    <div className="w-13/14 mx-auto bg-[#FFFFFF] mx-8 md:p-6 rounded-lg shadow-sm">
-      {/* Heading Section */}
-      <div className="bg-[#191919] rounded-t-xl mb-8 p-2">
-        <h2 className="text-xl md:text-xl text-white font-semibold">
-          Shop by Category
-        </h2>
+    <div className="w-11/12 md:w-full overflow-x-scroll overflow-y-hidden mx-auto bg-white mx-8 md:p-1 rounded-lg shadow-sm">
+      <div className="text-center flex justify-between rounded-t-xl md:rounded-t-[5px] items-start bg-[#191919] md:bg-white flex-row p-2 text-xl md:text-lg text-white font-semibold relative">
+        <h2 className="text-lg md:text-lg text-white md:text-orange-500 font-semibold">Shop By Category</h2>
       </div>
 
-      {/* Scrollable Carousel Section */}
       <div
-        ref={carouselRef} // Attach ref to the scrollable container
-        className="flex overflow-x-scroll overflow-y-hidden m-4  no-scrollbar space-x-4"
+        ref={carouselRef}
+        className="flex custom-scrollbar m-4 md:m-1 space-x-2"
       >
         {categorys.length > 0 ? (
           categorys.map((category) => (
             <div
               key={category.id}
-              className="w-[160px] hover:bg-gray-200 mb-4 rounded-lg shadow-sm flex flex-col items-center justify-center cursor-pointer transition-transform transform hover:scale-105 hover:shadow-xl"
+              className="w-[150px] h-[170px] md:w-[120px] md:h-[130px] flex-shrink-0 flex flex-col items-center justify-center rounded-lg shadow-sm cursor-pointer"
               onClick={() => handleSubmit(category)}
             >
               <img
                 src={category.image}
                 alt={category.name}
-                className="w-19 h-19 md:w-20 md:h-20 object-cover rounded-lg mb-4"
+                className="w-[125px] h-[125px] md:h-[70px] md:w-[70px] object-cover rounded-full transition-transform transform hover:scale-105 hover:shadow-xl"
               />
-              <h5 className="text-[15px] md:text-base font-semibold text-gray-800 text-center">
+              <h5 className="text-[15px] md:text-[12px] font-semibold text-gray-600 text-center mt-2">
                 {category.name}
               </h5>
             </div>
           ))
         ) : (
           <p className="text-gray-500 col-span-full text-center">
-            No categories available.
+            Loading..
           </p>
         )}
       </div>
+
     </div>
   );
 };
