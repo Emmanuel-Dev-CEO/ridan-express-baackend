@@ -16,55 +16,56 @@ class paymentController {
         const { amount, sellerId } = req.body;
 
         try {
+            // Retrieve seller details
+            const seller = await sellerModel.findById(sellerId);
+            if (!seller) {
+                return res.status(404).json({ message: 'Seller not found' });
+            }
+            const sellerEmail = seller.email;
+
             // Generate unique transaction ID
             const transactionId = uuidv4();
 
             // Create payment on Paystack
             const payment = await paystack.transaction.initialize({
-                email: sellerEmail, 
+                email: sellerEmail,
                 amount: amount * 100,
                 callback_url: 'http://localhost:3001/payment/callback',
                 metadata: { sellerId, transactionId },
             });
 
             const paymentReference = payment.data.reference;
-            const seller = await sellerModel.findById(sellerId);
-            const sellerEmail = seller.email;
+
             const newPayment = new paystackModel({
                 sellerId,
                 transactionId,
                 reference: paymentReference,
-                amount, 
-                status: 'pending'
+                amount,
+                status: 'pending',
             });
 
             await newPayment.save();
 
             return res.status(200).json({
                 authorization_url: payment.data.authorization_url,
-                reference: paymentReference
+                reference: paymentReference,
             });
-
         } catch (error) {
             console.error('Payment creation error:', error.message);
-            return res.status(500).json({ message: 'Internal server error' });
+            return res.status(500).json({ message: 'Internal server error', error: error.message });
         }
-    }
+    };
 
     payment_callback = async (req, res) => {
         const { reference } = req.query;
-        console.log('Reference received for verification:', reference);
 
         try {
             const verificationResponse = await paystack.transaction.verify(reference);
 
             if (verificationResponse.data.status === 'success') {
-                const transactionDetails = verificationResponse.data;
+                const { sellerId, amount } = verificationResponse.data.metadata;
 
-                const sellerId = transactionDetails.metadata.sellerId;
-                const amount = transactionDetails.amount / 100;
-
-                await this.creditSellerAndAdmin(sellerId, amount);
+                await this.creditSellerAndAdmin(sellerId, amount / 100);
 
                 return res.status(200).json({ message: 'Payment verified and credited' });
             } else {
@@ -77,14 +78,12 @@ class paymentController {
     };
 
     creditSellerAndAdmin = async (sellerId, amount) => {
-        const commissionRate = 0.02; 
+        const commissionRate = 0.02;
         const adminAmount = amount * commissionRate;
         const sellerAmount = amount - adminAmount;
-
         const time = moment().format('MM/DD/YYYY').split('/');
 
         try {
-            // Credit seller's wallet
             await sellerWallet.create({
                 sellerId,
                 amount: sellerAmount,
@@ -92,7 +91,6 @@ class paymentController {
                 year: time[2],
             });
 
-            // Credit admin's wallet
             await myShopWallet.create({
                 amount: adminAmount,
                 month: time[0],
@@ -104,12 +102,13 @@ class paymentController {
         }
     };
 
+
     create_paystack_account = async (req, res) => {
-        const { id } = req; 
+        const { id } = req;
         const uid = uuidv4();
 
         try {
-          
+
             const existingAccount = await paystackModel.findOne({ sellerId: id });
 
             if (existingAccount) {
@@ -245,7 +244,7 @@ class paymentController {
             await paystack.transaction.charge({
                 amount: payment.amount * 100,
                 currency: 'NGN',
-                destination: stripeId,
+                destination: paystackId,
             });
 
             await withdrawRequest.findByIdAndUpdate(paymentId, { status: 'success' });

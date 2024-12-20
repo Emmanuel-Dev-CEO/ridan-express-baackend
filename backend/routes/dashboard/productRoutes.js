@@ -1,11 +1,8 @@
 const router = require('express').Router();
 const { authMiddleware } = require('../../middlewares/authMiddleware');
-const { saveDraft, getDrafts, publishDraft, add_product, products_get, product_get, product_update, product_image_update } = require('../../controllers/dashboard/productController');
+const { add_product, products_get, product_get, product_update, product_image_update } = require('../../controllers/dashboard/productController');
 
-// Product Draft Routes
-router.post("/drafts", saveDraft);
-router.get("/drafts", getDrafts);
-router.post("/drafts/publish", publishDraft);
+
 
 // Product Routes
 router.post('/product-add', authMiddleware, add_product);

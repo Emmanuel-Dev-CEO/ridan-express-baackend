@@ -1,68 +1,9 @@
 const formidable = require('formidable');
 const cloudinary = require('cloudinary').v2;
 const productModel = require('../../models/productModel');
-const Draft = require("../../models/draftModel");
 const { responseReturn } = require('../../utiles/response');
 
 class productController {
-
-    saveDraft = async (req, res) => {
-        try {
-            const { productId, category, adminId } = req.body;
-
-            // Check if draft already exists
-            const existingDraft = await Draft.findOne({ productId, adminId });
-            if (existingDraft) {
-                return res.status(400).json({ message: "Draft already exists" });
-            }
-
-            // Save the draft
-            const draft = new Draft({ productId, category, adminId });
-            await draft.save();
-
-            res.status(201).json({ message: "Draft saved successfully", draft });
-        } catch (error) {
-            res.status(500).json({ message: "Error saving draft", error });
-        }
-    };
-
-    // Fetch all drafts
-    getDrafts = async (req, res) => {
-        try {
-            const drafts = await Draft.find();
-            res.status(200).json(drafts);
-        } catch (error) {
-            res.status(500).json({ message: "Error fetching drafts", error });
-        }
-    };
-
-    // Publish a draft
-    publishDraft = async (req, res) => {
-        try {
-            const { productId, adminId } = req.body;
-
-            // Fetch full product details from AliExpress API
-            const response = await axios.get(`https://api.aliexpress.com/v1/products/${productId}`);
-            const productDetails = response.data;
-
-            // Save the product to the database
-            const product = new Product({
-                name: productDetails.name,
-                price: productDetails.price,
-                image_url: productDetails.image_url,
-                category: productDetails.category,
-                createdBy: adminId,
-            });
-            await product.save();
-
-            // Remove the draft
-            await Draft.deleteOne({ productId, adminId });
-
-            res.status(201).json({ message: "Product published successfully", product });
-        } catch (error) {
-            res.status(500).json({ message: "Error publishing product", error });
-        }
-    };
 
     add_product = async (req, res) => {
         const { id } = req;

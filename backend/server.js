@@ -5,6 +5,7 @@ const cors = require('cors');
 const http = require('http');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const Aliexpress = require('./models/aliexpressModel');  // Import the Product model
 const paystack = require('paystack')('YOUR_PAYSTACK_SECRET_KEY'); // Add your Paystack secret key
 require('dotenv').config();
 const socket = require('socket.io');
@@ -149,6 +150,45 @@ const verifyPaystackPayment = async (reference) => {
     }
 };
 
+app.post('/api/store/products', async (req, res) => {
+    const { productId } = req.body;
+
+    if (!productId) {
+        return res.status(400).json({ error: 'Product ID is required' });
+    }
+
+    try {
+        // Fetch product details from AliExpress API
+        const response = await axios.get('https://aliexpress-datahub.p.rapidapi.com/item_detail', {
+            headers: {
+                'X-RapidAPI-Key': ' 71725b545fmsh5eea17576dcb9b7p10ef2cjsnada00c5ca0da',
+                'X-RapidAPI-Host': 'aliexpress-datahub.p.rapidapi.com',
+            },
+            params: {
+                itemId: productId,
+            },
+        });
+
+        const productData = response.data;
+
+        // Save the product to MongoDB
+        const newProduct = new Product({
+            productId,
+            title: productData.title,
+            price: productData.price,
+            imageUrl: productData.imageUrl,  // Example, adjust based on actual response
+            description: productData.description,
+            category: productData.category,  // Example, adjust based on actual response
+        });
+
+        await newProduct.save();  // Save the new product to the database
+
+        res.status(200).json({ message: 'Product added to store successfully!', product: newProduct });
+    } catch (error) {
+        console.error('Error fetching product details:', error);
+        res.status(500).json({ error: 'Failed to fetch or add product' });
+    }
+});
 
 app.post('/api/v2/order/verify-payment', async (req, res) => {
     const { reference } = req.body; // Get reference from the request body
