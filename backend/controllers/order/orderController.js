@@ -4,27 +4,38 @@ const cardModel = require('../../models/cardModel')
 const myShopWallet = require('../../models/myShopWallet')
 const sellerWallet = require('../../models/sellerWallet')
 const { mongo: { ObjectId } } = require('mongoose')
+const axios = require('axios');
 const { responseReturn } = require('../../utiles/response')
-
 const moment = require('moment')
 const paystack = require('paystack')(process.env.PAYSTACK_SECRET_KEY)
 
 class orderController {
     verifyPaystackPayment = async (reference) => {
-        console.log('Reference passed to verify:', reference); // Log the reference here
-        try {
-            const verificationResponse = await paystack.transaction.verify(reference);
-            console.log('Paystack Verification Response:', verificationResponse);
-            if (verificationResponse.status && verificationResponse.data.status === 'success') {
-                return verificationResponse.data;  // Payment is successful
-            }
-            return null;  
-        } catch (error) {
-            console.log('Error verifying payment: ', error);
+        if (!reference) {
+            console.log('Invalid reference passed.');
             return null;
         }
-    }
-    
+
+        console.log('Reference passed to verify:', reference);
+        try {
+            const response = await axios.get(`https://api.paystack.co/transaction/verify/${reference}`, {
+                headers: {
+                    Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+                }
+            });
+            console.log('Paystack Verification Response:', response.data);
+
+            if (response.data.status && response.data.data.status === 'success') {
+                return response.data.data;  // Payment is successful
+            }
+
+            console.log('Payment verification failed:', response.data.message);
+            return null;
+        } catch (error) {
+            console.log('Error verifying payment:', error.response?.data || error.message);
+            return null;
+        }
+    };
 
     paymentCheck = async (orderId, reference) => {
 
