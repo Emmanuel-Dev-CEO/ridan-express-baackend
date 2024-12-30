@@ -11,7 +11,6 @@ import {
   FaSearch,
   FaBars,
   FaShoppingCart,
-  FaTwitter,
 } from "react-icons/fa";
 import { AiOutlineTwitter, AiFillGithub, AiFillHeart } from "react-icons/ai";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -32,7 +31,6 @@ const Headers = () => {
 
   const { pathname } = useLocation();
   const [showShidebar, setShowShidebar] = useState(true);
-  const [categoryShow, setCategoryShow] = useState(true);
   const [searchValue, setSearchValue] = useState("");
   const [category, setCategory] = useState("");
 
@@ -74,16 +72,16 @@ const Headers = () => {
   }, []);
 
   return (
-    <div className="w-full h-[100%] bg-[#F2F2F2] py-1 md:bg-[#F5F5F5]">
+    <div className="w-full bg-orange-500 md:bg-green-500">
       <div className="header-top bg-none md-lg:hidden">
         <div className="w-[85%] lg:w-[90%] mx-auto">
-          <div className="flex w-full justify-between items-center h-[30px] text-black">
+          <div className="flex w-full justify-between items-center h-[35px] text-white font-semibold">
             <ul className="flex justify-start text-[12px] items-center gap-8">
               <li className="flex relative justify-center items-center gap-2 text-[12px] after:absolute after:h-[18px] after:w-[1px] after:bg-[#afafaf] after:-right-[16px]">
                 <span>
                   <GrMail />
                 </span>
-                <span>ridanexpress@gmail.com</span>
+                <span>Sell on ridan</span>
               </li>
               <span>Powered by Ridan</span>
             </ul>
@@ -103,16 +101,6 @@ const Headers = () => {
                     <AiFillGithub />
                   </a>
                 </div>
-                <div className="flex group cursor-pointer text-slate-800 text-sm justify-center items-center gap-1 relative after:h-[18px] after:w-[1px] after:bg-bg-[#F5F5F5] after:-right-[16px] after:absolute before:absolute before:h-[18px] before:bg-[#F5F5F5] before:w-[1px] before:-left-[20px]">
-                  <img src="images/language.png" alt="" />
-                  <span>
-                    <MdOutlineKeyboardArrowDown />
-                  </span>
-                  <ul className="absolute invisible transition-all text-[12px] to-12 rounded-sm duration-200 text-white p-2 w-[100px] flex flex-col gap-3 group-hover:visible group-hover:top-6 group-hover:bg-black z-10">
-                    <li>UK English</li>
-                    <li>English</li>
-                  </ul>
-                </div>
               </div>
             </div>
           </div>
@@ -124,10 +112,10 @@ const Headers = () => {
           : "md:fixed top-0 py-3 bg-white"
           }   z-[9999] w-full`}
       >
-        <div className="w-white">
-          <div className="w-[85%] lg:w-[90%] mx-auto">
-            <div className="h-[40px] md:h-[1px] flex justify-between items-center flex-wrap">
-              <div className="md-lg:w-full flex justify-between w-3/12">
+        <div >
+          <div className="w-[75%] lg:w-[90%] mx-auto">
+            <div className="h-[50px] md:h-[70px] flex justify-around items-center flex-wrap">
+              <div className="md-lg:w-full flex justify-between w-3/10">
                 <div className="flex items-center">
                   <div
                     className="justify-center items-center w-[30px] h-[40px] text-white rounded-sm cursor-pointer lg:hidden md-lg:flex xl:hidden hidden"
@@ -155,7 +143,6 @@ const Headers = () => {
                         <span className="text-xl tex-black">
                           <FaUser />
                         </span>
-                        <span className="md:hidden text-[12px]">{userInfo.name}</span>
                       </Link>
                     ) : (
                       <Link
@@ -187,64 +174,78 @@ const Headers = () => {
                 </div>
               </div>
               <div className="md-lg:w-full w-9/12">
-                <div className="flex justify-between md-lg:justify-center items-center flex-wrap pl-8">
-                  <ul className="flex justify-start items-start gap-8 text-[14px] font-semibold md-lg:hidden">
-                    <li>
-                      <Link
-                        to="/"
-                        className={`p-2 block ${pathname === "/"
-                          ? "text-black"
-                          : "text-black text-opacity-95"
-                          }`}
-                      >
-                        Home
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        to="/shops"
-                        className={`p-2 block ${pathname === "/shop"
-                          ? "text-black"
-                          : "text-black text-opacity-95 rounded-full"
-                          }`}
-                      >
-                        All products
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        to="/blog"
-                        className={`p-2 block ${pathname === "/blog"
-                          ? "text-black"
-                          : "text-black text-opacity-95"
-                          }`}
-                      >
-                        Blog
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        to="/about"
-                        className={`p-2 block ${pathname === "/about"
-                          ? "text-black"
-                          : "text-black text-opacity-95"
-                          }`}
-                      >
-                        About
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        to="/contact"
-                        className={`p-2 block ${pathname === "/contact"
-                          ? "text-black"
-                          : "text-black text-opacity-95"
-                          }`}
-                      >
-                        Contact
-                      </Link>
-                    </li>
-                  </ul>
+                <div className="flex justify-between md-lg:justify-center items-center flex-wrap">
+                  <div className="w-9/12 md-lg:pl-0 md-lg:w-full ">
+                    <div className="flex flex-wrap w-full justify-between items-center md-lg:gap-6">
+                      <div className="w-8/12 md-lg:w-full">
+                        <div className="relative flex items-center">
+                          {/* Text input for text-based search */}
+                          <input
+                            className="w-full px-2 py-2 border rounded-lg md:rounded-full focus:outline-none"
+                            type="text"
+                            placeholder="Search product, categories and brands"
+                            value={searchValue}
+                            onChange={(e) => setSearchValue(e.target.value)}
+                          />
+
+                          {/* Search button for text search */}
+                          <button
+                            onClick={search}
+                            className="absolute right-2 bg-orange-400 text-white px-4 py-2 rounded-lg"
+                          >
+                            <FaSearch />
+                          </button>
+                        </div>
+
+                      </div>
+                      <div className="w-4/12 flex gap-4 block md-lg:hidden pl-12 md-lg:w-full md-lg:pl-0">
+                        <Dropdown className="rounded-xl shadow-xl text-orange-500 w-[170px] " color={"orange"} label="Support">
+                          <Dropdown.Item as={Link} to="/dashboard">
+                            Help center
+                          </Dropdown.Item>
+                          <Dropdown.Item as={Link} to="/contact">
+                            Contact us
+                          </Dropdown.Item>
+                          <Dropdown.Item as={Link} to="/track-orders">
+                            Track my Orders
+                          </Dropdown.Item>
+                          <Dropdown.Item as={Link} to="/return-policy">
+                            Ridan return policy
+                          </Dropdown.Item>
+                          <Dropdown.Item as={Link} to="/faqs">
+                            FAQs
+                          </Dropdown.Item>
+                        </Dropdown>
+
+
+
+                        {userInfo ? (
+                          <Dropdown className="rounded-xl shadow-xl w-[170px]" label="Account">
+                            <Dropdown.Header>
+                              <span className="block text-sm">Hi,</span>
+                              <span className="block truncate text-sm font-medium">{userInfo.name}</span>
+                            </Dropdown.Header>
+                            <Link to="/dashboard"><Dropdown.Item>Dashboard</Dropdown.Item></Link>
+                            <Dropdown.Item>Settings</Dropdown.Item>
+                            <Dropdown.Item>Track Orders</Dropdown.Item>
+                            <Dropdown.Divider />
+                            <button className="bg-[#191919] text-center text-bold w-[90%] rounded-lg m-2"><Dropdown.Item className="text-orange-500">Sign out</Dropdown.Item></button>
+                          </Dropdown>
+                        ) : (
+                          <Link
+                            to="/login"
+                            className="flex cursor-pointer justify-center items-center gap-2 text-sm"
+                          >
+                            <div className="flex cursor-pointer justify-center items-center gap-2 text-sm">
+                              <Button color="dark">Login</Button>
+                            </div>
+                          </Link>
+                        )}
+
+
+                      </div>
+                    </div>
+                  </div>
                   <div className="flex md-lg:hidden justify-center items-center gap-5">
                     <div className="flex justify-center gap-5">
                       <div
@@ -331,16 +332,6 @@ const Headers = () => {
               <span className="font-bold pb-4">Profile</span>
 
               <div className="flex justify-star items-center gap-10">
-                <div className="flex group cursor-pointer text-slate-800 text-sm justify-center items-center gap-1 relative after:h-[18px] after:w-[1px] after:bg-[#afafaf] after:-right-[16px] after:absolute">
-                  <img src="http://localhost:3001/images/language.png" alt="" />
-                  <span>
-                    <MdOutlineKeyboardArrowDown />
-                  </span>
-                  <ul className="absolute invisible transition-all to-12 rounded-sm duration-200 text-white p-2 w-[100px] flex flex-col gap-3 group-hover:visible group-hover:top-6 group-hover:bg-black z-10">
-                    <li>UK English</li>
-                    <li>English</li>
-                  </ul>
-                </div>
                 {userInfo ? (
                   <Link
                     className="flex cursor-pointer justify-center items-center gap-2 text-sm"
@@ -369,123 +360,8 @@ const Headers = () => {
             </div>
           </div>
         </div>
-        <div className="w-[85%] lg:w-[90%] mx-auto">
-          <div className="flex w-full flex-wrap md-lg:gap-8">
-            <div className="w-3/12 ">
-              <div className="bg-none md:hidden relative">
-                <div
-                  onClick={() => setCategoryShow(!categoryShow)}
-                  className="h-[40px] rounded-full bg-black text-white text-opacity-95 flex justify-center md-lg:justify-between font-semibold md-lg:px-6 mt-4 items-center gap-3 md:gap-1 text-[15px] text-md cursor-pointer"
-                >
-                  <div className="flex justify-center items-center gap-3">
-                    <span>
-                      <FaBars />
-                    </span>
-                    <span>All Categories</span>
-                  </div>
-                  <span className="pt-1">
-                    <MdOutlineKeyboardArrowDown />
-                  </span>
-                </div>
-                <div
-                  className={`${categoryShow ? "h-0" : "h-[400px]"
-                    } overflow-hidden mt-3 rounded-xl transition-all md-lg:relative duration-500 absolute z-[99999] bg-white w-full border-x`}
-                >
-                  <ul className="py-2 text-slate-600 font-medium h-full overflow-auto">
-                    {categorys.map((c, i) => {
-                      return (
-                        <li
-                          key={i}
-                          className="flex justify-start items-center gap-2 px-[24px] py-[6px]"
-                        >
-                          <img
-                            src={c.image}
-                            className="w-[35px] h-[35px] rounded-full overflow-hidden"
-                            alt={c.name}
-                          />
-                          <Link
-                            to={`/products?category=${c.name}`}
-                            className="text-sm block"
-                          >
-                            {c.name}
-                          </Link>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              </div>
-            </div>
-            <div className="w-9/12 pl-8 md-lg:pl-0 md-lg:w-full ">
-              <div className="flex flex-wrap w-full justify-between items-center md-lg:gap-6">
-                <div className="w-8/12 md-lg:w-full">
-                  <div className="relative flex mt-4 items-center">
-                    {/* Text input for text-based search */}
-                    <input
-                      className="w-full px-4 py-2 border rounded-full focus:outline-none"
-                      type="text"
-                      placeholder="Trending Cloths"
-                      value={searchValue}
-                      onChange={(e) => setSearchValue(e.target.value)}
-                    />
+        <div className="w-[95%] lg:w-[90%] mx-auto">
 
-                    {/* Search button for text search */}
-                    <button
-                      onClick={search}
-                      className="absolute right-2 bg-black text-white p-2 rounded-full"
-                    >
-                      <FaSearch />
-                    </button>
-                  </div>
-
-                </div>
-                <div className="w-4/12 flex gap-4 block md-lg:hidden pl-12 pt-4 md-lg:w-full md-lg:pl-0">
-                  <Dropdown label="Help">
-                    <Link to="/dashboard"><Dropdown.Item>Help center</Dropdown.Item></Link>
-                    <Dropdown.Item>Contact us</Dropdown.Item>
-                    <Dropdown.Item>Track my Orders</Dropdown.Item>
-                    <Dropdown.Item>Ridan return policy</Dropdown.Item>
-                    <Dropdown.Item>FAQs</Dropdown.Item>
-                  </Dropdown>
-
-
-                  {userInfo ? (
-                    <Dropdown label="Account">
-                      <Dropdown.Header>
-                        <span className="block text-sm">Hi,</span>
-                        <span className="block truncate text-sm font-medium">{userInfo.name}</span>
-                      </Dropdown.Header>
-                      <Link to="/dashboard"><Dropdown.Item>Dashboard</Dropdown.Item></Link>
-                      <Dropdown.Item>Settings</Dropdown.Item>
-                      <Dropdown.Item>Track Orders</Dropdown.Item>
-                      <Dropdown.Divider />
-                      <button className="bg-blue-500 text-bold w-[90%] m-2 rounded-sm"><Dropdown.Item className="text-white">Sign out</Dropdown.Item></button>
-                    </Dropdown>
-                    // <Link
-                    //   className="flex cursor-pointer justify-center items-center gap-2 text-sm"
-                    //   to="/dashboard"
-                    // >
-                    //   <span className="text-xl text-orange-500">
-                    //     <FaUser />
-                    //   </span>
-                    //   <span className="md:hidden text-[12px]">{userInfo.name}</span>
-                    // </Link>
-                  ) : (
-                    <Link
-                      to="/login"
-                      className="flex cursor-pointer justify-center items-center gap-2 text-sm"
-                    >
-                      <div className="flex cursor-pointer justify-center items-center gap-2 text-sm">
-                        <Button color="dark">Login</Button>
-                      </div>
-                    </Link>
-                  )}
-
-
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>

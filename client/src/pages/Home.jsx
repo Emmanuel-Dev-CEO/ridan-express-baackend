@@ -30,11 +30,11 @@ const Home = () => {
         <div className=' bg-[#F5F5F5]'>
             <Heders />
             <Banner />
-            <div className='mx-12 md:mx-2'>
+            <div className='mx-20 md:mx-2'>
                 <Categorys />
             </div>
 
-            <div className='py-[10px] mx-12 md:mx-2'>
+            <div className='py-[10px] mx-20 md:mx-2'>
                 {products ? <FeatureProducts products={products} /> : <p>Loading products...</p>}
             </div>
             <div className='py-[10px] mx-12 md:mx-2 overflow-hidden'>

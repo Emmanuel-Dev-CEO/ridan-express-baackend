@@ -50,7 +50,7 @@ const Categorys = () => {
               <img
                 src={category.image}
                 alt={category.name}
-                className="w-[125px] h-[125px] md:h-[70px] md:w-[70px] object-cover rounded-full transition-transform transform hover:scale-105 hover:shadow-xl"
+                className="w-[125px] h-[125px] md:h-[70px] md:w-[70px] object-cover md:rounded-full rounded-lg transition-transform transform hover:scale-105 hover:shadow-xl"
               />
               <h5 className="text-[15px] md:text-[12px] font-semibold text-gray-600 text-center mt-2">
                 {category.name}

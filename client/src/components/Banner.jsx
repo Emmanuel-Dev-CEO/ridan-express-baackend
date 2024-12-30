@@ -1,42 +1,20 @@
 import React from "react";
 import { Carousel as FlowbiteCarousel } from "flowbite-react";
-// import Carousel from 'react-multi-carousel';
-// import 'react-multi-carousel/lib/styles.css';
-// import { Link } from "react-router-dom";
 import { get_banners } from "../store/reducers/homeReducer";
 import { useEffect } from "react";
 import { /* useSelector */ useDispatch } from "react-redux";
 
 const Banner = () => {
   const dispatch = useDispatch();
-  // const { banners } = useSelector((state) => state.home);
-  // const responsive = {
-  //   superLargeDesktop: {
-  //     breakpoint: { max: 4000, min: 3000 },
-  //     items: 1,
-  //   },
-  //   desktop: {
-  //     breakpoint: { max: 3000, min: 1024 },
-  //     items: 1,
-  //   },
-  //   tablet: {
-  //     breakpoint: { max: 1024, min: 464 },
-  //     items: 1,
-  //   },
-  //   mobile: {
-  //     breakpoint: { max: 464, min: 0 },
-  //     items: 1,
-  //   },
-  // };
 
   useEffect(() => {
     dispatch(get_banners());
   }, [dispatch]);
 
   return (
-    <div className="flex item-center ml-[50px] md:ml-[5px] md:flex-wrap md:mt-[100px] mx-auto max-w-screen-xl">
+    <div className="flex item-center ml-[100px] md:ml-[5px] md:flex-wrap md:mt-[100px] mx-20 md:mx-1 max-w-screen-xl">
       {/* Carousel Section */}
-      <div className="h-[365px] w-[900px] md:w-full md:h-[170px] md:mt-4 mt-3 ml-[45px] md:ml-[14px] mx-4 rounded-xl bg-black overflow-hidden">
+      <div className="h-[365px] w-[800px] md:w-[100%] md:h-[180px] md:mt-4 mt-3 ml-[45px] md:ml-[14px] mx-4 rounded-xl bg-black overflow-hidden">
         <FlowbiteCarousel slideInterval={5000} indicators={true} arrows={true}>
           <img
             className="h-full"

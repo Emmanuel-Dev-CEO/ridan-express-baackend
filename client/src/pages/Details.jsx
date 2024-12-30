@@ -350,10 +350,11 @@ const Details = () => {
             </div>
             <div className="flex flex-col gap-5 md:mt-20 bg-white p-6 md:p-6 ">
               <div className="flex flex-col gap-2 md:mt-5">
-                <h1 className="text-xl font-light text-[#191919]">
+                <h1 className="text-lg font-light text-[#191919]">
                   {product.name}
                 </h1>
-                <div className="text-xl text-[#191919] font-semibold">
+                <h3 className="font-light">Brand: <span className="text-orange-400 font-normal">{product.brand}</span></h3>
+                <div className="text-lg text-[#191919] font-semibold">
                   {product.discount !== 0 ? (
                     <>
                       NGN {(product.price -
@@ -375,14 +376,22 @@ const Details = () => {
                   </div>
                 )}
               </div>
-              <div className="flex items-center gap-4">
-                <Ratings ratings={product.rating} />
-                <span className="text-green-500">(Product review)</span>
-              </div>
-              <p className="text-gray-600">{product.description}</p>
-              <p className="text-gray-600">
-                Shipping from: <span>{product.location}</span>
+              <p className=" text-sm text-gray-600">{product.description}</p>
+              <p className=" text-sm font-semibold text-gray-600">
+                Delivery from: <span>{product.location}</span>
               </p>
+              <div className="flex items-center gap-2">
+                <Ratings ratings={product.rating} />
+                <span className="text-green-400 text-sm">(Product review)</span>
+              </div>
+              <div className="text-gray-600 flex items-center gap-3 font-medium">
+                <span>Availability:</span>
+                {product.stock > 0 ? (
+                  <span className="text-green-400 ml-2">In stock ({product.stock})</span>
+                ) : (
+                  <span className="text-red-500 ml-2">Out of stock</span>
+                )}
+              </div>
               <div className="flex items-center gap-3">
                 <div className="flex w-[100%] items-center bg-white border border-gray-400 p-2 rounded-full">
                   <button
@@ -400,7 +409,7 @@ const Details = () => {
                   </button>
                 </div>
                 <button
-                  className="px-5 py-2 md:p-3 md:w-fit flex w-[100%] active:bg-black justify-center align-center border border-red-400 text-[#191919] md:text-red-400 gap-1 md:text-sm rounded-full "
+                  className=" rounded-full bg-white p-3 border border-red-400 active:bg-pink-500"
                   onClick={add_card}
                 >
                   <ShoppingCartCheckoutIcon />
@@ -411,14 +420,6 @@ const Details = () => {
                 >
                   <FavoriteBorderIcon className="text-red-400" />
                 </button>
-              </div>
-              <div className="text-gray-600 flex items-center gap-3 font-semibold">
-                <span>Availability:</span>
-                {product.stock > 0 ? (
-                  <span className="text-green-600 ml-2">In Stock({product.stock})</span>
-                ) : (
-                  <span className="text-red-600 ml-2">Out of Stock</span>
-                )}
               </div>
               <div className="flex items-center gap-3">
                 {product.stock ? (

@@ -7,6 +7,11 @@ import { useLocation } from 'react-router-dom';
 const Payment = () => {
     const { state: { price, items, orderId } } = useLocation();
     const [paymentMethod, setPaymentMethod] = useState('paystack'); // Default to Paystack
+    const [customerEmail, setCustomerEmail] = useState(''); // State to store customer email
+
+    const handleEmailChange = (e) => {
+        setCustomerEmail(e.target.value);
+    };
 
     return (
         <div>
@@ -26,20 +31,38 @@ const Payment = () => {
                                             <span className='text-slate-600'>Paystack</span>
                                         </div>
                                     </div>
-
-                                    
                                 </div>
+
                                 {/* Payment Method Components */}
                                 {paymentMethod === 'paystack' && (
-                                    <Paystack orderId={orderId} price={price} /> 
+                                    <div className='w-full px-4 py-8 bg-white shadow-sm'>
+                                        <div className='mb-4'>
+                                            <label className='block text-gray-700 text-sm font-bold mb-2'>Email Address</label>
+                                            <input
+                                                type='email'
+                                                value={customerEmail}
+                                                onChange={handleEmailChange}
+                                                placeholder='Enter your email'
+                                                className='w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500'
+                                            />
+                                        </div>
+                                        <Paystack
+                                            orderId={orderId}
+                                            price={price}
+                                            customerEmail={customerEmail} // Pass customer email
+                                        />
+                                    </div>
                                 )}
                                 {paymentMethod === 'bkash' && (
                                     <div className='w-full px-4 py-8 bg-white shadow-sm'>
-                                        <button className='px-10 py-[6px] rounded-sm hover:shadow-orange-500/20 hover:shadow-lg bg-orange-500 text-white'>Pay Now</button>
+                                        <button className='px-10 py-[6px] rounded-sm hover:shadow-orange-500/20 hover:shadow-lg bg-orange-500 text-white'>
+                                            Pay Now
+                                        </button>
                                     </div>
                                 )}
                             </div>
                         </div>
+
                         <div className='w-5/12 md:w-full'>
                             <div className='pl-2 md:pl-0 md:mb-0'>
                                 <div className='bg-white shadow p-5 text-slate-600 flex flex-col gap-3'>
@@ -61,6 +84,6 @@ const Payment = () => {
             <Footer />
         </div>
     );
-}
+};
 
 export default Payment;
